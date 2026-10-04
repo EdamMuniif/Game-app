@@ -1,50 +1,55 @@
-# SPIKE CUP 26 Tournament Manager
+# SPIKE CUP 26 Tournament Manager — Next.js
 
-A mobile-first, dependency-free tournament management web app for volleyball and other team sports.
+Next.js App Router rebuild of the SPIKE CUP 26 tournament management application.
 
-## Included
+## Architecture
 
-- Dashboard with registration progress, event information, format and match status
-- Team registration with capacity control
-- Random team draw with unique draw letters (A, B, C...)
-- Tournament formats:
-  - Knockout only
-  - Group stage only
-  - Groups + knockout
-- Group allocation and round-robin fixture generation
-- Group standings with configurable win points
-- Knockout bracket fixture generation, including BYEs when required
-- Automatic winner propagation to later knockout rounds
-- Match score/status entry
-- Rules management
-- Settings for team count, format, groups, qualifiers, sets, venue and dates
-- Local JSON backup export/import
-- Browser localStorage persistence
+- Next.js App Router
+- React client state with browser localStorage persistence
+- Separate application routes:
+  - `/` dashboard
+  - `/teams`
+  - `/draw`
+  - `/matches`
+  - `/rules`
+  - `/settings`
+- Shared tournament state in `lib/tournament-context.js`
+- Tournament/draw/fixture calculations in `lib/tournament.js`
+- Responsive shared application shell in `components/AppShell.js`
 
-## Run
+## Current capabilities
 
-Open `index.html` directly in a modern browser, or serve the folder with any static server.
+- Team registration and team limit control
+- Random draw-letter assignment
+- Knockout, group-stage, and groups + knockout tournament formats
+- Round-robin group fixture generation
+- Group standings
+- Knockout bracket generation with BYEs
+- Automatic winner propagation
+- Result entry and match status
+- Rules administration
+- Tournament settings
+- Local JSON backup import/export
 
-Example:
+## Local development
 
 ```bash
-python -m http.server 8080
+npm install
+npm run dev
 ```
 
-Then open `http://localhost:8080`.
+Open `http://localhost:3000`.
 
-## Data model / important behavior
+## Vercel
 
-- Team list changes clear the existing draw and fixtures because the tournament structure is no longer valid.
-- Structural settings changes (format, number of groups, qualifiers, team limit) also require a new draw and fixtures.
-- The app stores data in the current browser only. Use **Export backup** regularly if this is the operational tournament record.
-- For multi-user use across phones/computers, replace localStorage with a shared backend such as Firebase/Supabase.
+Import the GitHub repository into Vercel. Vercel should detect Next.js automatically. No custom build command or output directory is required.
 
-## Recommended next production upgrade
+## Production roadmap
+
+The current version intentionally preserves localStorage so the migration does not introduce a backend dependency immediately. Recommended next phase:
 
 1. Firebase Authentication for organizer/admin access.
 2. Firestore or Realtime Database for multi-device synchronization.
-3. Audit log for team, draw, result and settings changes.
-4. Public read-only fixture/standings page.
-5. PDF/Excel export for submitted teams and match schedules.
-6. Optional Google Sheets sync for registration and results reporting.
+3. Audit log for teams, draw, settings and results.
+4. Public read-only fixtures and standings view.
+5. PDF/Excel exports.
