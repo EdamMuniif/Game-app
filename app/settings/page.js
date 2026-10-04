@@ -40,16 +40,19 @@ export default function SettingsPage() {
           </div></div>
 
           <div className="form-section"><h4>Teams & format</h4><div className="form-grid">
-            <label>Maximum teams<input name="maxTeams" type="number" min="2" max="64" required value={form.maxTeams} onChange={change} /></label>
+            <label>Maximum teams (A–Z draw)<input name="maxTeams" type="number" min="2" max="26" required value={form.maxTeams} onChange={change} /></label>
             <label>Tournament format<select name="format" value={form.format} onChange={change}><option value="knockout">Knockout only</option><option value="groups">Group stage only</option><option value="groups_knockout">Groups + knockout</option></select></label>
             {groupMode && <><label>Number of groups<input name="groupCount" type="number" min="1" max="16" value={form.groupCount} onChange={change} /></label><label>Teams advancing per group<input name="advancePerGroup" type="number" min="1" max="8" value={form.advancePerGroup} onChange={change} /></label></>}
           </div></div>
 
-          <div className="form-section"><h4>Match rules</h4><div className="form-grid">
+          <div className="form-section"><h4>Match rules & timing</h4><div className="form-grid">
             <label>Best of sets<select name="bestOfSets" value={form.bestOfSets} onChange={change}><option value={1}>1 set</option><option value={3}>Best of 3</option><option value={5}>Best of 5</option></select></label>
             <label>Points for group win<input name="winPoints" type="number" min="1" max="5" value={form.winPoints} onChange={change} /></label>
             <label>Courts<input name="courts" type="number" min="1" max="10" value={form.courts} onChange={change} /></label>
             <label>First match time<input name="startTime" type="time" value={form.startTime} onChange={change} /></label>
+            <label>Minutes in each half / playing period<input name="halfMinutes" type="number" min="1" max="180" value={form.halfMinutes} onChange={change} /></label>
+            <label>Break time (minutes)<input name="breakMinutes" type="number" min="0" max="60" value={form.breakMinutes} onChange={change} /></label>
+            <label>Between matches (minutes)<input name="betweenMatchesMinutes" type="number" min="0" max="120" value={form.betweenMatchesMinutes} onChange={change} /></label>
           </div></div>
 
           <div className="settings-actions"><button className="btn btn-primary" type="submit">Save settings</button><button className="btn btn-danger" type="button" onClick={() => { if (window.confirm('Reset all teams, draw, matches, rules and settings? This cannot be undone.')) { resetAll(); setMessage('Tournament data reset.'); } }}>Reset all tournament data</button></div>
