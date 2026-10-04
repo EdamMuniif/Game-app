@@ -47,3 +47,9 @@
 .assignment-letter.pending{background:#edf2f7;color:#8190a2}
 @media(max-width:900px){.live-draw-grid{grid-template-columns:1fr}.letter-pool{grid-template-columns:repeat(9,1fr)}}
 @media(max-width:520px){.spin-window{height:132px}.spin-value{font-size:23px}.spin-letter{font-size:58px}.letter-pool{grid-template-columns:repeat(7,1fr)}.draw-assignment-list{grid-template-columns:1fr}}
+
+.bye-notice{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;margin-bottom:12px;border:1px solid #bfe0fb;border-radius:12px;background:#f2f9ff}
+.bye-notice strong{white-space:nowrap;color:var(--navy)}
+.bye-notice span{color:var(--muted);font-size:13px;line-height:1.45}
+.timing-chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.timing-chips span{padding:6px 9px;border-radius:999px;background:var(--ice);color:var(--navy);font-size:11px;font-weight:850}
