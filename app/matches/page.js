@@ -42,7 +42,7 @@ export default function MatchesPage() {
     <AppShell pageTitle="Matches">
       {message && <div className="notice">{message}</div>}
       <section className="panel match-toolbar">
-        <div><p className="eyebrow">MATCH CONTROL</p><h3>Fixtures & results</h3><p className="muted">{state.matches.length ? `${state.matches.length} fixtures • ${state.matches.filter((match) => match.status === 'final').length} completed` : 'Generate fixtures after completing the draw.'}</p></div>
+        <div><p className="eyebrow">MATCH CONTROL</p><h3>Fixtures & results</h3><p className="muted">{state.matches.length ? `${state.matches.length} fixtures • ${state.matches.filter((match) => match.status === 'final').length} completed` : 'Generate fixtures after completing the draw.'}</p><div className="timing-chips"><span>{state.settings.halfMinutes} min half / period</span><span>{state.settings.breakMinutes} min break</span><span>{state.settings.betweenMatchesMinutes} min between matches</span></div></div>
         <div className="button-row">
           <button className="btn btn-ghost" disabled={!state.matches.length} onClick={() => { if (window.confirm('Clear all fixtures and results?')) clearMatches(); }}>Clear fixtures</button>
           {canAdvance && <button className="btn btn-primary" disabled={!allGroupsFinal} onClick={advance}>Generate knockout</button>}
