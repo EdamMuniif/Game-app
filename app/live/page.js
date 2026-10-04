@@ -1,21 +1,32 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTournament } from '../../lib/tournament-context';
-import { formatDate, groupStandings, groupedTeams, resolvedTeams } from '../../lib/tournament';
+import {
+  formatDate, formatTimer, groupStandings, groupedTeams, resolvedTeams,
+  timerPhaseLabel, timerRemainingSeconds
+} from '../../lib/tournament';
 
 export default function LivePage() {
   const { state } = useTournament();
+  const [now, setNow] = useState(Date.now());
   const teamMap = useMemo(() => Object.fromEntries(state.teams.map((team) => [team.id, team])), [state.teams]);
   const groupNames = Object.keys(groupedTeams(state.teams)).sort();
+  const liveMatch = state.matches.find((match) => match.status === 'live') || null;
   const remaining = state.matches.filter((match) => match.status !== 'final');
-  const nextMatch = remaining.find((match) => {
+  const nextMatch = liveMatch || remaining.find((match) => {
     const [a, b] = resolvedTeams(match, state.matches);
     return a && b;
   }) || remaining[0] || null;
   const finalMatch = [...state.matches].reverse().find((match) => match.kind === 'knockout' && match.round === 'Final');
   const champion = finalMatch?.winnerId ? teamMap[finalMatch.winnerId] : null;
+
+  useEffect(() => {
+    if (!liveMatch?.timer?.running) return undefined;
+    const timer = window.setInterval(() => setNow(Date.now()), 250);
+    return () => window.clearInterval(timer);
+  }, [liveMatch?.id, liveMatch?.timer?.running]);
 
   function name(id) {
     return teamMap[id]?.name || 'TBD';
@@ -26,6 +37,7 @@ export default function LivePage() {
   }
 
   const [nextA, nextB] = matchTeams(nextMatch);
+  const liveRemaining = liveMatch?.timer ? timerRemainingSeconds(liveMatch.timer, now) : null;
 
   return (
     <div className="public-live-page">
@@ -42,6 +54,14 @@ export default function LivePage() {
 
       {champion && <section className="champion-card"><span>🏆</span><div><small>CHAMPION</small><strong>{champion.name}</strong></div></section>}
 
+      {liveMatch?.timer && (
+        <section className="public-live-banner">
+          <div><span className="live-pulse" /> LIVE NOW • {liveMatch.court || 'Court'}</div>
+          <strong>{name(matchTeams(liveMatch)[0])} <em>vs</em> {name(matchTeams(liveMatch)[1])}</strong>
+          <div className="public-live-clock"><small>{timerPhaseLabel(liveMatch.timer.phase)}</small><span>{formatTimer(liveRemaining)}</span></div>
+        </section>
+      )}
+
       <section className="public-stats">
         <article><span>Teams</span><strong>{state.teams.length}</strong></article>
         <article><span>Matches</span><strong>{state.matches.length}</strong></article>
@@ -51,7 +71,7 @@ export default function LivePage() {
 
       <section className="public-grid">
         <article className="public-card next-match-card">
-          <p className="eyebrow">NEXT MATCH</p>
+          <p className="eyebrow">{liveMatch ? 'CURRENT MATCH' : 'NEXT MATCH'}</p>
           {nextMatch ? (
             <>
               <div className="public-match-stage">{nextMatch.round || nextMatch.stage} • Match {nextMatch.matchNo}</div>

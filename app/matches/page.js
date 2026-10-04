@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import Link from 'next/link';
 import AppShell from '../../components/AppShell';
 import { useTournament } from '../../lib/tournament-context';
 import { formatDate, groupStandings, groupedTeams, resolvedTeams } from '../../lib/tournament';
@@ -44,7 +45,7 @@ export default function MatchesPage() {
       <section className="panel match-toolbar">
         <div><p className="eyebrow">MATCH CONTROL</p><h3>Fixtures & results</h3><p className="muted">{state.matches.length ? `${state.matches.length} fixtures • ${state.matches.filter((match) => match.status === 'final').length} completed` : 'Generate fixtures after completing the draw.'}</p><div className="timing-chips"><span>{state.settings.halfMinutes} min half / period</span><span>{state.settings.breakMinutes} min break</span><span>{state.settings.betweenMatchesMinutes} min between matches</span></div></div>
         <div className="button-row">
-          <button className="btn btn-ghost" disabled={!state.matches.length} onClick={() => { rescheduleMatches(); setMessage('Match schedule recalculated from Settings.'); }}>Rebuild schedule</button><button className="btn btn-ghost" disabled={!state.matches.length} onClick={() => { if (window.confirm('Clear all fixtures and results?')) clearMatches(); }}>Clear fixtures</button>
+          <Link className="btn btn-primary" href="/control">Open match control</Link><button className="btn btn-ghost" disabled={!state.matches.length} onClick={() => { rescheduleMatches(); setMessage('Match schedule recalculated from Settings.'); }}>Rebuild schedule</button><button className="btn btn-ghost" disabled={!state.matches.length} onClick={() => { if (window.confirm('Clear all fixtures and results?')) clearMatches(); }}>Clear fixtures</button>
           {canAdvance && <button className="btn btn-primary" disabled={!allGroupsFinal} onClick={advance}>Generate knockout</button>}
         </div>
       </section>

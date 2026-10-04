@@ -22,7 +22,7 @@ export default function DashboardPage() {
           <p>{settings.venue || 'Venue not set'} • {formatDate(settings.date)}</p>
           <div className="button-row">
             <Link className="btn btn-light" href="/teams">Manage teams</Link>
-            <Link className="btn btn-outline-light" href="/draw">Open draw</Link><Link className="btn btn-outline-light" href="/bracket">Bracket</Link><Link className="btn btn-outline-light" href="/live">Live view</Link>
+            <Link className="btn btn-outline-light" href="/draw">Open draw</Link><Link className="btn btn-outline-light" href="/control">Match control</Link><Link className="btn btn-outline-light" href="/bracket">Bracket</Link><Link className="btn btn-outline-light" href="/live">Live view</Link>
           </div>
         </div>
         <div className="hero-ball" aria-hidden="true">🏐</div>
