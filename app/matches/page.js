@@ -3,10 +3,10 @@
 import { useMemo, useState } from 'react';
 import AppShell from '../../components/AppShell';
 import { useTournament } from '../../lib/tournament-context';
-import { groupStandings, groupedTeams, resolvedTeams } from '../../lib/tournament';
+import { formatDate, groupStandings, groupedTeams, resolvedTeams } from '../../lib/tournament';
 
 export default function MatchesPage() {
-  const { state, updateMatch, clearMatches, generateKnockoutFromGroups } = useTournament();
+  const { state, updateMatch, rescheduleMatches, clearMatches, generateKnockoutFromGroups } = useTournament();
   const [editing, setEditing] = useState(null);
   const [message, setMessage] = useState('');
   const teamMap = useMemo(() => Object.fromEntries(state.teams.map((team) => [team.id, team])), [state.teams]);
@@ -44,7 +44,7 @@ export default function MatchesPage() {
       <section className="panel match-toolbar">
         <div><p className="eyebrow">MATCH CONTROL</p><h3>Fixtures & results</h3><p className="muted">{state.matches.length ? `${state.matches.length} fixtures • ${state.matches.filter((match) => match.status === 'final').length} completed` : 'Generate fixtures after completing the draw.'}</p><div className="timing-chips"><span>{state.settings.halfMinutes} min half / period</span><span>{state.settings.breakMinutes} min break</span><span>{state.settings.betweenMatchesMinutes} min between matches</span></div></div>
         <div className="button-row">
-          <button className="btn btn-ghost" disabled={!state.matches.length} onClick={() => { if (window.confirm('Clear all fixtures and results?')) clearMatches(); }}>Clear fixtures</button>
+          <button className="btn btn-ghost" disabled={!state.matches.length} onClick={() => { rescheduleMatches(); setMessage('Match schedule recalculated from Settings.'); }}>Rebuild schedule</button><button className="btn btn-ghost" disabled={!state.matches.length} onClick={() => { if (window.confirm('Clear all fixtures and results?')) clearMatches(); }}>Clear fixtures</button>
           {canAdvance && <button className="btn btn-primary" disabled={!allGroupsFinal} onClick={advance}>Generate knockout</button>}
         </div>
       </section>
@@ -57,7 +57,7 @@ export default function MatchesPage() {
         <section className="stage-block" key={stage}><div className="stage-header"><h3>{stage}</h3><span className="chip">{matches.length} match{matches.length === 1 ? '' : 'es'}</span></div>{matches.map((match) => {
           const [aId, bId] = resolvedTeams(match, state.matches);
           const score = match.scoreA == null || match.scoreB == null ? '—' : `${match.scoreA} : ${match.scoreB}`;
-          return <article className="match-card" key={match.id}><div className="match-no">Match {match.matchNo}</div><div className={!aId ? 'team-slot tbd' : 'team-slot'}>{teamName(aId)}</div><div className="score-badge">{score}</div><div className={!bId ? 'team-slot tbd' : 'team-slot'}>{teamName(bId)}</div><div><span className={`match-status status-${match.status}`}>{match.status}</span></div><div><button className="btn btn-ghost" disabled={!(aId && bId)} onClick={() => setEditing({ ...match, aName: teamName(aId), bName: teamName(bId) })}>Score</button></div></article>;
+          return <article className="match-card" key={match.id}><div className="match-no">Match {match.matchNo}</div><div className={!aId ? 'team-slot tbd' : 'team-slot'}>{teamName(aId)}</div><div className="score-badge">{score}</div><div className={!bId ? 'team-slot tbd' : 'team-slot'}>{teamName(bId)}</div><div><span className={`match-status status-${match.status}`}>{match.status}</span></div><div><button className="btn btn-ghost" disabled={!(aId && bId)} onClick={() => setEditing({ ...match, aName: teamName(aId), bName: teamName(bId) })}>Score</button></div><div className="match-meta"><span>{match.date ? formatDate(match.date) : 'Date TBD'}</span><strong>{match.time || 'Time TBD'}</strong><span>{match.court || 'Court TBD'}</span></div></article>;
         })}</section>
       ))}
 

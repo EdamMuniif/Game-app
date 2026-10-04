@@ -10,6 +10,8 @@ const navItems = [
   ['/teams', '👥', 'Teams'],
   ['/draw', '🎲', 'Draw'],
   ['/matches', '🏐', 'Matches'],
+  ['/bracket', '◫', 'Bracket'],
+  ['/live', '◉', 'Live View'],
   ['/rules', '📋', 'Rules'],
   ['/settings', '⚙', 'Settings']
 ];
