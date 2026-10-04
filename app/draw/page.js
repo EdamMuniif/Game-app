@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AppShell from '../../components/AppShell';
 import { useTournament } from '../../lib/tournament-context';
-import { groupedTeams } from '../../lib/tournament';
+import { groupedTeams, knockoutByeInfo } from '../../lib/tournament';
 
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
@@ -32,11 +32,13 @@ export default function DrawPage() {
     () => state.teams.filter((team) => !team.letter && team.id !== selectedTeamId),
     [state.teams, selectedTeamId]
   );
+  const letterPool = useMemo(() => ALPHABET.slice(0, Math.min(state.teams.length, 26)), [state.teams.length]);
   const usedLetters = useMemo(() => new Set(state.teams.map((team) => team.letter).filter(Boolean)), [state.teams]);
-  const availableLetters = useMemo(() => ALPHABET.filter((letter) => !usedLetters.has(letter)), [usedLetters]);
+  const availableLetters = useMemo(() => letterPool.filter((letter) => !usedLetters.has(letter)), [letterPool, usedLetters]);
   const drawn = state.teams.length > 0 && state.teams.every((team) => team.letter);
   const ordered = [...assignedTeams];
   const groups = groupedTeams(state.teams);
+  const byeInfo = useMemo(() => state.settings.format === 'knockout' ? knockoutByeInfo(state.teams.length) : null, [state.settings.format, state.teams.length]);
 
   useEffect(() => () => {
     window.clearInterval(teamIntervalRef.current);
@@ -94,7 +96,7 @@ export default function DrawPage() {
       return;
     }
     if (!availableLetters.length) {
-      setMessage('No letters remain in the A–Z pool.');
+      setMessage('No letters remain in the submitted-team letter pool.');
       return;
     }
 
@@ -155,7 +157,7 @@ export default function DrawPage() {
         <div>
           <p className="eyebrow">LIVE TEAM DRAW</p>
           <h3>Two-stage random draw</h3>
-          <p className="muted">Spin one remaining team for 1 second, then spin one unused letter from A–Z for that team. Assigned teams and letters are removed from their pools.</p>
+          <p className="muted">Spin one remaining team for 1 second, then spin one unused letter from the submitted-team range. With {state.teams.length || 0} teams the pool is {letterPool.length ? `A–${letterPool[letterPool.length - 1]}` : 'empty'}. Assigned teams and letters are removed from their pools.</p>
         </div>
         <div className="button-row">
           <span className="chip">{assignedTeams.length} / {state.teams.length} assigned</span>
@@ -204,7 +206,7 @@ export default function DrawPage() {
             <span className="draw-step-no">2</span>
             <div>
               <p className="eyebrow">LETTER SPINNER</p>
-              <h3>Assign A–Z</h3>
+              <h3>Assign {letterPool.length ? `A–${letterPool[letterPool.length - 1]}` : 'letters'}</h3>
             </div>
           </div>
 
@@ -271,7 +273,20 @@ export default function DrawPage() {
           <button className="btn btn-primary" disabled={!drawn || spinningTeam || spinningLetter} onClick={buildFixtures}>Generate fixtures</button>
         </div>
         {!drawn ? <p className="muted">Complete both spins for every submitted team to generate fixtures.</p> : state.settings.format === 'knockout' ? (
-          <div className="preview-list">{ordered.map((team, index) => <div key={team.id}><span>{team.letter}</span><strong>{team.name}</strong><small>{index % 2 === 0 ? `Match ${Math.floor(index / 2) + 1} — side A` : `Match ${Math.floor(index / 2) + 1} — side B`}</small></div>)}</div>
+          <>
+            {byeInfo?.byeCount > 0 && (
+              <div className="bye-notice">
+                <strong>{byeInfo.byeCount} bye{byeInfo.byeCount === 1 ? '' : 's'}</strong>
+                <span>The first {byeInfo.byeCount} draw letter{byeInfo.byeCount === 1 ? '' : 's'} advance directly to the {byeInfo.byeTo}. No bye is counted as a played match.</span>
+              </div>
+            )}
+            <div className="preview-list">{ordered.map((team, index) => {
+              const byeCount = byeInfo?.byeCount || 0;
+              const playIndex = index - byeCount;
+              const isBye = index < byeCount;
+              return <div key={team.id}><span>{team.letter}</span><strong>{team.name}</strong><small>{isBye ? `BYE → ${byeInfo.byeTo}` : `${byeInfo?.openingRound || 'Opening round'} • Match ${Math.floor(playIndex / 2) + 1} — side ${playIndex % 2 === 0 ? 'A' : 'B'}`}</small></div>;
+            })}</div>
+          </>
         ) : (
           <div className="group-preview">{Object.entries(groups).sort().map(([group, teams]) => <article key={group}><h4>{group}</h4>{teams.sort((a, b) => a.letter.localeCompare(b.letter)).map((team) => <div key={team.id}><span>{team.letter}</span>{team.name}</div>)}</article>)}</div>
         )}
