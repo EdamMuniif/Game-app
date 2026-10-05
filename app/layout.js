@@ -2,8 +2,8 @@ import './globals.css';
 import { TournamentProvider } from '../lib/tournament-context';
 
 export const metadata = {
-  title: 'SPIKE CUP 26 Tournament Manager',
-  description: 'Tournament draw, fixtures, standings and administration for SPIKE CUP 26.'
+  title: 'Shipyard Recreation Club | Tournament Management System',
+  description: 'Tournament management for Shipyard Recreation Club sports events, teams, draws, fixtures, results and live operations.'
 };
 
 export const viewport = {
