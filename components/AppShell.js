@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTournament } from '../lib/tournament-context';
 
 const navItems = [
@@ -28,13 +28,12 @@ const mobilePrimary = [
 
 export default function AppShell({ pageTitle, children }) {
   const pathname = usePathname();
-  const fileRef = useRef(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [adminPin, setAdminPin] = useState('');
   const [adminError, setAdminError] = useState('');
   const [theme, setTheme] = useState('light');
   const {
-    state, exportBackup, importBackup, isAdmin, adminPromptOpen, setAdminPromptOpen,
+    state, isAdmin, adminPromptOpen, setAdminPromptOpen,
     adminNotice, setAdminNotice, loginAdmin, logoutAdmin, syncStatus, migrationAvailable
   } = useTournament();
 
@@ -82,21 +81,6 @@ export default function AppShell({ pageTitle, children }) {
     } catch (error) {
       setAdminError(error.message || 'Unable to sign in.');
     }
-  }
-
-  async function handleImport(event) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    const text = await file.text();
-    const ok = window.confirm('Import this backup and replace current tournament data?');
-    if (ok) {
-      try {
-        importBackup(text);
-      } catch {
-        window.alert('Invalid backup file.');
-      }
-    }
-    event.target.value = '';
   }
 
   return (
@@ -156,10 +140,6 @@ export default function AppShell({ pageTitle, children }) {
         </nav>
 
         <div className="sidebar-footer">
-          <div className="sidebar-utility-actions">
-            <button className="sidebar-utility-btn" type="button" onClick={exportBackup}>Export backup</button>
-            <button className="sidebar-utility-btn" type="button" onClick={() => fileRef.current?.click()}>Import backup</button>
-          </div>
           {isAdmin ? (
             <button
               className={`sidebar-admin-live ${syncStatus === 'error' || syncStatus === 'local' ? 'has-error' : ''}`}
@@ -210,8 +190,6 @@ export default function AppShell({ pageTitle, children }) {
               >
                 <span aria-hidden="true">{theme === 'dark' ? '☾' : '☀'}</span>
               </button>
-              <button className="btn btn-ghost topbar-secondary-action" onClick={exportBackup}>Export backup</button>
-              <button className="btn btn-ghost topbar-secondary-action" onClick={() => fileRef.current?.click()}>Import backup</button>
             </div>
           </header>
           {!isAdmin && (
@@ -229,8 +207,6 @@ export default function AppShell({ pageTitle, children }) {
           {children}
         </div>
       </main>
-
-      <input ref={fileRef} type="file" accept="application/json" hidden onChange={handleImport} />
 
       {adminPromptOpen && (
         <div className="modal-backdrop admin-login-backdrop" role="dialog" aria-modal="true" aria-label="Admin login">
