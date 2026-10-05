@@ -335,3 +335,31 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .admin-login-modal{width:min(430px,100%)}.admin-login-modal .stack-form{margin-top:16px}.admin-login-error{padding:9px 10px;border-radius:10px;background:#fff0f2;border:1px solid #f0c9cf;color:#9b2635;font-size:12px;font-weight:800}
 @media(max-width:960px){.sync-pill{display:none}}
 @media(max-width:700px){.public-mode-banner{align-items:flex-start;flex-wrap:wrap}.public-mode-banner strong{flex-basis:calc(100% - 90px)}.public-mode-banner button{margin-left:auto}}
+
+
+/* Desktop page scrolling */
+@media(min-width:961px){
+  .app-shell{
+    height:100vh;
+    min-height:100vh;
+    overflow:hidden;
+  }
+  .sidebar{
+    position:relative;
+    top:auto;
+    height:100vh;
+    min-height:100vh;
+    align-self:stretch;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+  }
+  .main-content{
+    height:100vh;
+    min-height:0;
+    overflow-y:auto;
+    overflow-x:hidden;
+    overscroll-behavior-y:contain;
+    scrollbar-gutter:stable;
+    -webkit-overflow-scrolling:touch;
+  }
+}
