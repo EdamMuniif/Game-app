@@ -43,7 +43,7 @@ function downloadBlob(content, type, filename) {
 }
 
 export default function DatasheetPage() {
-  const { tournaments, exportBackup, isAdmin, requestAdmin } = useTournament();
+  const { tournaments, exportBackup, deleteTournament, isAdmin, requestAdmin } = useTournament();
   const [tab, setTab] = useState('tournaments');
   const [search, setSearch] = useState('');
   const [year, setYear] = useState('all');
@@ -51,6 +51,11 @@ export default function DatasheetPage() {
   const [status, setStatus] = useState('all');
   const [duration, setDuration] = useState('all');
   const [tournamentId, setTournamentId] = useState('all');
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deletePin, setDeletePin] = useState('');
+  const [deleteError, setDeleteError] = useState('');
+  const [deleting, setDeleting] = useState(false);
+  const [message, setMessage] = useState('');
 
   const years = useMemo(() => [...new Set(tournaments.map(tournamentYear).filter(Boolean))].sort((a, b) => b - a), [tournaments]);
   const sports = useMemo(() => [...new Set(tournaments.map((item) => item.settings.sport).filter(Boolean))].sort(), [tournaments]);
@@ -77,6 +82,7 @@ export default function DatasheetPage() {
 
       if (tab === 'tournaments') {
         rows.push({
+          _tournamentId: tournament.id,
           Year: base.year,
           Tournament: base.tournament,
           Sport: base.sport,
@@ -181,7 +187,7 @@ export default function DatasheetPage() {
     return rows.filter((row) => Object.values(row).join(' ').toLowerCase().includes(q));
   }, [filteredTournaments, tab, search]);
 
-  const columns = dataset.length ? Object.keys(dataset[0]) : (
+  const columns = dataset.length ? Object.keys(dataset[0]).filter((key) => !key.startsWith('_')) : (
     tab === 'tournaments'
       ? ['Year', 'Tournament', 'Sport', 'Date', 'Duration', 'Venue', 'Entries', 'Matches', 'Format', 'Status', 'Visibility']
       : []
@@ -212,8 +218,35 @@ export default function DatasheetPage() {
     exportBackup();
   }
 
+  function openDelete(row) {
+    const target = tournaments.find((item) => item.id === row._tournamentId);
+    if (!target) return;
+    setDeleteTarget(target);
+    setDeletePin('');
+    setDeleteError('');
+  }
+
+  async function confirmDelete(event) {
+    event.preventDefault();
+    if (!deleteTarget || deleting) return;
+    setDeleteError('');
+    setDeleting(true);
+    try {
+      const result = await deleteTournament(deleteTarget.id, deletePin);
+      setMessage(result.deletedName + ' was permanently deleted.');
+      if (tournamentId === deleteTarget.id) setTournamentId('all');
+      setDeleteTarget(null);
+      setDeletePin('');
+    } catch (error) {
+      setDeleteError(error.message || 'Unable to delete tournament.');
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   return (
     <AppShell pageTitle="Datasheet">
+      {message && <div className="notice">{message}</div>}
       <section className="panel datasheet-toolbar">
         <div>
           <p className="eyebrow">HISTORICAL DATA</p>
@@ -278,16 +311,94 @@ export default function DatasheetPage() {
 
         <div className="table-wrap datasheet-table-wrap">
           <table className="datasheet-table">
-            <thead><tr>{columns.map((column) => <th key={column}>{column}</th>)}</tr></thead>
+            <thead>
+              <tr>
+                {columns.map((column) => <th key={column}>{column}</th>)}
+                {tab === 'tournaments' && <th>Actions</th>}
+              </tr>
+            </thead>
             <tbody>
               {dataset.map((row, index) => (
-                <tr key={index}>{columns.map((column) => <td key={column}>{cell(row[column])}</td>)}</tr>
+                <tr key={index}>
+                  {columns.map((column) => <td key={column}>{cell(row[column])}</td>)}
+                  {tab === 'tournaments' && (
+                    <td>
+                      <button className="btn btn-danger" type="button" onClick={() => openDelete(row)}>
+                        Delete
+                      </button>
+                    </td>
+                  )}
+                </tr>
               ))}
-              {!dataset.length && <tr><td colSpan={Math.max(1, columns.length)}>No records match the selected filters.</td></tr>}
+              {!dataset.length && <tr><td colSpan={Math.max(1, columns.length + (tab === 'tournaments' ? 1 : 0))}>No records match the selected filters.</td></tr>}
             </tbody>
           </table>
         </div>
       </section>
+
+      {deleteTarget && (
+        <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label="Delete tournament">
+          <div className="modal">
+            <div className="modal-head">
+              <div>
+                <p className="eyebrow">PERMANENT DELETE</p>
+                <h3>{deleteTarget.settings.tournamentName}</h3>
+              </div>
+              <button
+                className="icon-btn"
+                type="button"
+                disabled={deleting}
+                onClick={() => {
+                  setDeleteTarget(null);
+                  setDeletePin('');
+                  setDeleteError('');
+                }}
+                aria-label="Close delete confirmation"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="delete-warning">
+              <strong>This permanently deletes the tournament.</strong>
+              <p>Teams, rosters, draw, fixtures, scores, standings, schedule, and history will be removed from the shared database.</p>
+            </div>
+
+            <form className="stack-form" onSubmit={confirmDelete}>
+              <label>Admin PIN
+                <input
+                  type="password"
+                  inputMode="numeric"
+                  autoComplete="current-password"
+                  value={deletePin}
+                  onChange={(event) => setDeletePin(event.target.value)}
+                  placeholder="Enter admin PIN"
+                  required
+                  autoFocus
+                />
+              </label>
+              {deleteError && <div className="admin-login-error">{deleteError}</div>}
+              <div className="form-actions">
+                <button className="btn btn-danger" type="submit" disabled={deleting || !deletePin.trim()}>
+                  {deleting ? 'Deleting…' : 'Permanently delete'}
+                </button>
+                <button
+                  className="btn btn-ghost"
+                  type="button"
+                  disabled={deleting}
+                  onClick={() => {
+                    setDeleteTarget(null);
+                    setDeletePin('');
+                    setDeleteError('');
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </AppShell>
   );
 }
