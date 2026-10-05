@@ -64,7 +64,7 @@ export default function LivePage() {
           <h1>{state.settings.tournamentName}</h1>
           <p>{state.settings.venue} • {formatDate(state.settings.date)}</p>
         </div>
-        <Link className="btn btn-light" href="/">Tournament Manager</Link>
+        <Link className="btn btn-light" href="/">Manager Home</Link>
       </header>
 
       {showStartCountdown && (
