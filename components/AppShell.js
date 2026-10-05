@@ -30,7 +30,12 @@ export default function AppShell({ pageTitle, children }) {
   const pathname = usePathname();
   const fileRef = useRef(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const { state, exportBackup, importBackup } = useTournament();
+  const [adminPin, setAdminPin] = useState('');
+  const [adminError, setAdminError] = useState('');
+  const {
+    state, exportBackup, importBackup, isAdmin, adminPromptOpen, setAdminPromptOpen,
+    adminNotice, setAdminNotice, loginAdmin, logoutAdmin, syncStatus, lastSync, migrationAvailable
+  } = useTournament();
 
   useEffect(() => {
     setMobileNavOpen(false);
@@ -44,6 +49,17 @@ export default function AppShell({ pageTitle, children }) {
       document.body.style.overflow = previousOverflow;
     };
   }, [mobileNavOpen]);
+
+  async function handleAdminLogin(event) {
+    event.preventDefault();
+    setAdminError('');
+    try {
+      await loginAdmin(adminPin);
+      setAdminPin('');
+    } catch (error) {
+      setAdminError(error.message || 'Unable to sign in.');
+    }
+  }
 
   async function handleImport(event) {
     const file = event.target.files?.[0];
@@ -112,7 +128,10 @@ export default function AppShell({ pageTitle, children }) {
             <button className="sidebar-utility-btn" type="button" onClick={exportBackup}>Export backup</button>
             <button className="sidebar-utility-btn" type="button" onClick={() => fileRef.current?.click()}>Import backup</button>
           </div>
-          <div className="mini-status"><span>Saved locally</span><span className="status-dot" /></div>
+          <div className="mini-status">
+            <span>{syncStatus === 'online' ? 'Shared online' : syncStatus === 'saving' ? 'Saving…' : syncStatus === 'error' ? 'Sync issue' : 'Local only'}</span>
+            <span className={`status-dot ${syncStatus === 'error' ? 'error' : syncStatus === 'saving' ? 'saving' : ''}`} />
+          </div>
         </div>
       </aside>
 
@@ -131,15 +150,65 @@ export default function AppShell({ pageTitle, children }) {
               <h1>{pageTitle}</h1>
             </div>
             <div className="topbar-actions">
+              <div className={`sync-pill sync-${syncStatus}`}>
+                <span className="sync-dot" />
+                <strong>{syncStatus === 'online' ? 'Shared' : syncStatus === 'saving' ? 'Saving' : syncStatus === 'error' ? 'Sync issue' : 'Local'}</strong>
+                {lastSync && syncStatus === 'online' && <small>{lastSync}</small>}
+              </div>
+              {isAdmin
+                ? <button className="btn btn-ghost" onClick={logoutAdmin}>Admin ✓</button>
+                : <button className="btn btn-primary" onClick={() => { setAdminNotice('Enter the admin PIN to edit tournament data.'); setAdminPromptOpen(true); }}>Admin login</button>}
               <button className="btn btn-ghost topbar-secondary-action" onClick={exportBackup}>Export backup</button>
               <button className="btn btn-ghost topbar-secondary-action" onClick={() => fileRef.current?.click()}>Import backup</button>
             </div>
           </header>
+          {!isAdmin && (
+            <div className="public-mode-banner">
+              <span>Public view</span>
+              <strong>Tournament data is shared online. Admin PIN is required to make changes.</strong>
+              <button type="button" onClick={() => setAdminPromptOpen(true)}>Admin login</button>
+            </div>
+          )}
+          {migrationAvailable && (
+            <div className="migration-banner">
+              This browser has existing local tournament data. Sign in as admin to publish it to the shared tournament automatically.
+            </div>
+          )}
           {children}
         </div>
       </main>
 
       <input ref={fileRef} type="file" accept="application/json" hidden onChange={handleImport} />
+
+      {adminPromptOpen && (
+        <div className="modal-backdrop admin-login-backdrop" role="dialog" aria-modal="true" aria-label="Admin login">
+          <div className="modal admin-login-modal">
+            <div className="modal-head">
+              <div>
+                <p className="eyebrow">ADMIN ACCESS</p>
+                <h3>Unlock tournament editing</h3>
+              </div>
+              <button className="icon-btn" type="button" onClick={() => { setAdminPromptOpen(false); setAdminError(''); }}>×</button>
+            </div>
+            <p className="muted">{adminNotice || 'Enter the tournament admin PIN.'}</p>
+            <form className="stack-form" onSubmit={handleAdminLogin}>
+              <label>Admin PIN
+                <input
+                  type="password"
+                  inputMode="numeric"
+                  autoComplete="current-password"
+                  value={adminPin}
+                  onChange={(event) => setAdminPin(event.target.value)}
+                  placeholder="Enter PIN"
+                  required
+                />
+              </label>
+              {adminError && <div className="admin-login-error">{adminError}</div>}
+              <button className="btn btn-primary" type="submit">Unlock editing</button>
+            </form>
+          </div>
+        </div>
+      )}
 
       <nav className="mobile-bottom-nav" aria-label="Mobile navigation">
         {mobilePrimary.map(([href, icon, label]) => (
