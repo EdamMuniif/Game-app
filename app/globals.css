@@ -326,3 +326,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   .mobile-appbar,.mobile-bottom-nav,.sidebar-overlay{display:none!important}
   .content-frame{max-width:none!important}
 }
+
+
+/* Shared tournament sync */
+.sync-pill{display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:7px 10px;border:1px solid var(--border);border-radius:999px;background:#fff;color:var(--navy);font-size:11px}.sync-pill small{color:var(--muted);font-weight:700}.sync-dot{width:8px;height:8px;border-radius:50%;background:#49d896;box-shadow:0 0 0 4px rgba(73,216,150,.12)}.sync-saving .sync-dot{background:#e3a126}.sync-error .sync-dot{background:#d94b59}
+.status-dot.saving{background:#e3a126}.status-dot.error{background:#d94b59}
+.public-mode-banner,.migration-banner{display:flex;align-items:center;gap:10px;margin:0 0 14px;padding:10px 12px;border-radius:12px;font-size:12px}.public-mode-banner{background:#eef7ff;border:1px solid #c5e2fa;color:#315470}.public-mode-banner>span{padding:5px 8px;border-radius:999px;background:#dcefff;color:var(--navy);font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.06em}.public-mode-banner strong{font-weight:750;flex:1}.public-mode-banner button{border:0;background:transparent;color:var(--blue);font-weight:900;padding:6px 8px}.migration-banner{background:#fff8df;border:1px solid #efd991;color:#735b12;font-weight:750}
+.admin-login-modal{width:min(430px,100%)}.admin-login-modal .stack-form{margin-top:16px}.admin-login-error{padding:9px 10px;border-radius:10px;background:#fff0f2;border:1px solid #f0c9cf;color:#9b2635;font-size:12px;font-weight:800}
+@media(max-width:960px){.sync-pill{display:none}}
+@media(max-width:700px){.public-mode-banner{align-items:flex-start;flex-wrap:wrap}.public-mode-banner strong{flex-basis:calc(100% - 90px)}.public-mode-banner button{margin-left:auto}}
