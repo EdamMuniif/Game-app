@@ -81,7 +81,6 @@ export default function AppShell({ pageTitle, children }) {
           <strong>{state.settings.tournamentName}</strong>
           <span>{pageTitle}</span>
         </div>
-        <Link className="mobile-add-team" href="/teams" aria-label="Add team">+</Link>
       </header>
 
       <aside className={`sidebar ${mobileNavOpen ? 'mobile-open' : ''}`} aria-label="Primary navigation">
@@ -135,7 +134,6 @@ export default function AppShell({ pageTitle, children }) {
             <div className="topbar-actions">
               <button className="btn btn-ghost topbar-secondary-action" onClick={exportBackup}>Export backup</button>
               <button className="btn btn-ghost topbar-secondary-action" onClick={() => fileRef.current?.click()}>Import backup</button>
-              <Link className="btn btn-primary" href="/teams">+ Add team</Link>
             </div>
           </header>
           {children}
