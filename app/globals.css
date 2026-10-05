@@ -1174,3 +1174,105 @@ html[data-theme="dark"] .sport-motion{opacity:.08}
   .datasheet-table-wrap{max-height:none!important;overflow:visible!important}
   .datasheet-table thead th{position:static}
 }
+
+
+/* Current tournament sport animation — CSS/emoji only, no image assets */
+.current-tournament-hero{position:relative;isolation:isolate}
+.current-tournament-copy{max-width:min(760px,72%);position:relative;z-index:3}
+.hero-sport-motion{
+  position:absolute!important;
+  z-index:2!important;
+  right:clamp(44px,8vw,130px);
+  top:50%;
+  width:150px;
+  height:150px;
+  transform:translateY(-50%);
+  display:grid;
+  place-items:center;
+  pointer-events:none;
+}
+.hero-sport-object{
+  display:block;
+  font-size:92px;
+  line-height:1;
+  transform-origin:center;
+  filter:drop-shadow(0 18px 20px rgba(0,0,0,.20));
+  will-change:transform;
+}
+.hero-sport-shadow{
+  position:absolute;
+  left:50%;
+  bottom:5px;
+  width:88px;
+  height:18px;
+  border-radius:50%;
+  background:rgba(0,0,0,.20);
+  filter:blur(7px);
+  transform:translateX(-50%);
+  animation:hero-sport-shadow 2.2s ease-in-out infinite;
+}
+
+/* Football / futsal: grounded bounce + roll */
+.hero-sport-football .hero-sport-object,
+.hero-sport-futsal .hero-sport-object{
+  animation:hero-ball-bounce 2.2s cubic-bezier(.45,.05,.55,.95) infinite;
+}
+
+/* Volleyball: lighter floating arc */
+.hero-sport-volleyball .hero-sport-object{
+  animation:hero-volleyball-float 3.2s ease-in-out infinite;
+}
+
+/* Badminton: gliding shuttle motion */
+.hero-sport-badminton .hero-sport-object{
+  animation:hero-shuttle-glide 3.4s ease-in-out infinite;
+}
+
+/* Other: quiet neutral movement */
+.hero-sport-other .hero-sport-object{
+  animation:hero-other-float 3.6s ease-in-out infinite;
+}
+
+@keyframes hero-ball-bounce{
+  0%,100%{transform:translate3d(0,0,0) rotate(0deg)}
+  20%{transform:translate3d(-18px,-34px,0) rotate(-35deg)}
+  42%{transform:translate3d(5px,0,0) rotate(22deg)}
+  62%{transform:translate3d(24px,-20px,0) rotate(55deg)}
+  82%{transform:translate3d(10px,0,0) rotate(78deg)}
+}
+@keyframes hero-volleyball-float{
+  0%,100%{transform:translate3d(0,8px,0) rotate(-8deg)}
+  25%{transform:translate3d(-22px,-18px,0) rotate(14deg)}
+  55%{transform:translate3d(14px,-30px,0) rotate(38deg)}
+  78%{transform:translate3d(26px,-8px,0) rotate(22deg)}
+}
+@keyframes hero-shuttle-glide{
+  0%,100%{transform:translate3d(-18px,15px,0) rotate(-18deg)}
+  30%{transform:translate3d(12px,-28px,0) rotate(9deg)}
+  62%{transform:translate3d(30px,-12px,0) rotate(22deg)}
+  82%{transform:translate3d(4px,4px,0) rotate(-5deg)}
+}
+@keyframes hero-other-float{
+  0%,100%{transform:translateY(4px) scale(1)}
+  50%{transform:translateY(-22px) scale(1.05)}
+}
+@keyframes hero-sport-shadow{
+  0%,100%{transform:translateX(-50%) scaleX(1);opacity:.22}
+  50%{transform:translateX(-50%) scaleX(.66);opacity:.11}
+}
+
+@media(max-width:900px){
+  .current-tournament-copy{max-width:74%}
+  .hero-sport-motion{right:24px;width:120px;height:120px}
+  .hero-sport-object{font-size:72px}
+}
+@media(max-width:640px){
+  .current-tournament-copy{max-width:100%;padding-right:64px}
+  .hero-sport-motion{right:12px;top:34px;width:72px;height:72px;transform:none}
+  .hero-sport-object{font-size:48px;opacity:.92}
+  .hero-sport-shadow{width:48px;height:10px;bottom:0}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-sport-object,.hero-sport-shadow{animation:none!important}
+  .hero-sport-object{transform:none!important}
+}
