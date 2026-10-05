@@ -1276,3 +1276,21 @@ html[data-theme="dark"] .sport-motion{opacity:.08}
   .hero-sport-object,.hero-sport-shadow{animation:none!important}
   .hero-sport-object{transform:none!important}
 }
+
+
+/* Permanent tournament delete confirmation */
+.delete-warning{
+  margin:0 0 16px;
+  padding:13px 14px;
+  border:1px solid #f0c7ce;
+  border-radius:12px;
+  background:#fff3f5;
+  color:#8f2535;
+}
+.delete-warning strong{display:block;font-size:13px}
+.delete-warning p{margin:5px 0 0;font-size:12px;line-height:1.5}
+html[data-theme="dark"] .delete-warning{
+  background:#31151b;
+  border-color:#6d2c38;
+  color:#ffb2bd;
+}
