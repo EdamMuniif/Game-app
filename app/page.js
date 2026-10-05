@@ -7,6 +7,14 @@ import AppShell from '../components/AppShell';
 import { useTournament } from '../lib/tournament-context';
 import { formatDate, formatLabel, tournamentYear, workflowState } from '../lib/tournament';
 
+const SPORT_HERO_ICON = {
+  Football: '⚽',
+  Futsal: '⚽',
+  Volleyball: '🏐',
+  Badminton: '🏸',
+  Other: '🏆'
+};
+
 export default function DashboardPage() {
   const router = useRouter();
   const { tournaments, state, selectTournament } = useTournament();
@@ -88,7 +96,7 @@ export default function DashboardPage() {
       </section>
 
       <section className="hero-card current-tournament-hero">
-        <div>
+        <div className="current-tournament-copy">
           <p className="eyebrow light">CURRENT TOURNAMENT</p>
           <h2>{state.settings.tournamentName}</h2>
           <p>{state.settings.sport} • {state.settings.venue || 'Venue not set'} • {formatDate(state.settings.date)}</p>
@@ -99,6 +107,16 @@ export default function DashboardPage() {
             <Link className="btn btn-outline-light" href="/control">Match control</Link>
             <Link className="btn btn-outline-light" href="/live">Live view</Link>
           </div>
+        </div>
+
+        <div
+          className={'hero-sport-motion hero-sport-' + String(state.settings.sport || 'Other').toLowerCase()}
+          aria-hidden="true"
+        >
+          <span className="hero-sport-shadow" />
+          <span className="hero-sport-object">
+            {SPORT_HERO_ICON[state.settings.sport] || SPORT_HERO_ICON.Other}
+          </span>
         </div>
       </section>
 
