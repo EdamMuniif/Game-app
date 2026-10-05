@@ -9,7 +9,7 @@ import {
 } from '../../lib/tournament';
 
 export default function LivePage() {
-  const { state } = useTournament();
+  const { state, syncStatus } = useTournament();
   const [now, setNow] = useState(Date.now());
   const teamMap = useMemo(() => Object.fromEntries(state.teams.map((team) => [team.id, team])), [state.teams]);
   const groupNames = Object.keys(groupedTeams(state.teams)).sort();
@@ -50,7 +50,19 @@ export default function LivePage() {
         <Link className="btn btn-light" href="/">Tournament Manager</Link>
       </header>
 
-      <div className="local-mode-note">Local display mode: this page shows data from this browser. Multi-device live sync will be enabled when Firebase is added.</div>
+      {syncStatus === 'online' || syncStatus === 'saving' ? (
+        <div className="live-sync-note live-sync-ok">
+          <span className="live-sync-dot" />
+          <strong>{syncStatus === 'saving' ? 'Updating live data…' : 'Live data synced'}</strong>
+          <span>This display is reading the shared tournament data.</span>
+        </div>
+      ) : (
+        <div className="live-sync-note live-sync-warning">
+          <span className="live-sync-dot" />
+          <strong>Live sync unavailable</strong>
+          <span>Showing the latest data available on this device.</span>
+        </div>
+      )}
 
       {champion && <section className="champion-card"><span>🏆</span><div><small>CHAMPION</small><strong>{champion.name}</strong></div></section>}
 
