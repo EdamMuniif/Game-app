@@ -126,7 +126,7 @@ export default function AppShell({ pageTitle, children }) {
           title={theme === 'dark' ? 'Day mode' : 'Night mode'}
           onClick={toggleTheme}
         >
-          <span aria-hidden="true">{theme === 'dark' ? '☀' : '☾'}</span>
+          <span aria-hidden="true">{theme === 'dark' ? '☾' : '☀'}</span>
         </button>
       </header>
 
@@ -190,7 +190,7 @@ export default function AppShell({ pageTitle, children }) {
                 title={theme === 'dark' ? 'Day mode' : 'Night mode'}
               >
                 <span aria-hidden="true">{theme === 'dark' ? '☀' : '☾'}</span>
-                <strong>{theme === 'dark' ? 'Day' : 'Night'}</strong>
+                <strong>{theme === 'dark' ? 'Night' : 'Day'}</strong>
               </button>
               <div className={`sync-pill sync-${syncStatus}`}>
                 <span className="sync-dot" />
