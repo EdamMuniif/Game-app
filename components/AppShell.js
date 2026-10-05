@@ -189,8 +189,7 @@ export default function AppShell({ pageTitle, children }) {
                 aria-label={theme === 'dark' ? 'Switch to day mode' : 'Switch to night mode'}
                 title={theme === 'dark' ? 'Day mode' : 'Night mode'}
               >
-                <span aria-hidden="true">{theme === 'dark' ? '☀' : '☾'}</span>
-                <strong>{theme === 'dark' ? 'Night' : 'Day'}</strong>
+                <span aria-hidden="true">{theme === 'dark' ? '☾' : '☀'}</span>
               </button>
               <div className={`sync-pill sync-${syncStatus}`}>
                 <span className="sync-dot" />
