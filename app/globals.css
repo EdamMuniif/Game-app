@@ -823,3 +823,62 @@ html[data-theme="dark"] .progress-fill{
 .sidebar-admin-live.login:hover{
   background:rgba(255,255,255,.07);
 }
+
+
+/* Live shared sync status */
+.live-sync-note{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin:0 0 16px;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  font-size:12px;
+}
+.live-sync-note strong{font-size:12px}
+.live-sync-note>span:last-child{color:var(--muted)}
+.live-sync-dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  flex:0 0 9px;
+}
+.live-sync-ok{
+  background:#eefaf4;
+  border-color:#bfe8d2;
+  color:#156e4d;
+}
+.live-sync-ok .live-sync-dot{
+  background:#36c887;
+  box-shadow:0 0 0 4px rgba(54,200,135,.12);
+}
+.live-sync-warning{
+  background:#fff8df;
+  border-color:#efd991;
+  color:#735b12;
+}
+.live-sync-warning .live-sync-dot{
+  background:#d99a24;
+  box-shadow:0 0 0 4px rgba(217,154,36,.12);
+}
+html[data-theme="dark"] .live-sync-ok{
+  background:#0d2a21;
+  border-color:#245b48;
+  color:#8ee0bc;
+}
+html[data-theme="dark"] .live-sync-warning{
+  background:#2a240e;
+  border-color:#5c4e21;
+  color:#e9d58e;
+}
+@media(max-width:700px){
+  .live-sync-note{
+    align-items:flex-start;
+    flex-wrap:wrap;
+  }
+  .live-sync-note>span:last-child{
+    flex-basis:100%;
+    padding-left:18px;
+  }
+}
