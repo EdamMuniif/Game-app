@@ -57,8 +57,7 @@ export default function AppShell({ pageTitle, children }) {
     setAdminNotice,
     loginAdmin,
     logoutAdmin,
-    syncStatus,
-    migrationAvailable
+    syncStatus
   } = useTournament();
 
   useEffect(() => {
@@ -254,13 +253,6 @@ export default function AppShell({ pageTitle, children }) {
               <button type="button" onClick={() => setAdminPromptOpen(true)}>Admin login</button>
             </div>
           )}
-
-          {migrationAvailable && isAdmin && (
-            <div className="migration-banner">
-              Existing SPIKE CUP data has been upgraded to the multi-tournament database format.
-            </div>
-          )}
-
           {children}
         </div>
       </main>
