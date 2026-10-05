@@ -906,3 +906,100 @@ html[data-theme="dark"] .live-sync-warning{
 @media(prefers-reduced-motion:reduce){
   .public-live-dot{animation:none}
 }
+
+
+/* Tournament start countdown */
+.public-live-indicator{
+  height:auto;
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  margin-bottom:10px;
+}
+.public-live-indicator strong{
+  color:#aeead0;
+  font-size:11px;
+  line-height:1;
+  font-weight:950;
+  letter-spacing:.16em;
+}
+.public-live-dot{
+  width:10px;
+  height:10px;
+  flex:0 0 10px;
+}
+
+.tournament-countdown{
+  display:grid;
+  grid-template-columns:minmax(190px,.7fr) minmax(420px,1.3fr);
+  gap:18px;
+  align-items:center;
+  margin:0 0 16px;
+  padding:18px 20px;
+  border:1px solid rgba(108,190,255,.20);
+  border-radius:18px;
+  background:linear-gradient(125deg,#071f43,#0c4f92);
+  color:#fff;
+  box-shadow:var(--shadow);
+}
+.tournament-countdown-head{
+  display:grid;
+  gap:5px;
+}
+.tournament-countdown-head>span{
+  color:#9ed9ff;
+  font-size:10px;
+  font-weight:950;
+  letter-spacing:.16em;
+}
+.tournament-countdown-head small{
+  color:#d7eaff;
+  font-size:12px;
+  font-weight:750;
+}
+.tournament-countdown-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:9px;
+}
+.tournament-countdown-grid>div{
+  min-width:0;
+  padding:12px 10px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:13px;
+  background:rgba(255,255,255,.07);
+  text-align:center;
+}
+.tournament-countdown-grid strong{
+  display:block;
+  font-size:27px;
+  line-height:1;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:.02em;
+}
+.tournament-countdown-grid span{
+  display:block;
+  margin-top:5px;
+  color:#bfe2ff;
+  font-size:9px;
+  font-weight:850;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+html[data-theme="dark"] .tournament-countdown{
+  background:linear-gradient(125deg,#041426,#0a3765);
+  border-color:#1f4e77;
+}
+@media(max-width:760px){
+  .tournament-countdown{
+    grid-template-columns:1fr;
+    gap:12px;
+    padding:15px;
+  }
+}
+@media(max-width:460px){
+  .tournament-countdown-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .tournament-countdown-grid strong{font-size:24px}
+}
