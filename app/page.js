@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AppShell from '../components/AppShell';
+import BadmintonShuttle from '../components/BadmintonShuttle';
 import { useTournament } from '../lib/tournament-context';
 import { formatDate, formatLabel, tournamentYear, workflowState } from '../lib/tournament';
 
@@ -11,7 +12,7 @@ const SPORT_HERO_ICON = {
   Football: '⚽',
   Futsal: '⚽',
   Volleyball: '🏐',
-  Badminton: '🏸',
+  Badminton: '',
   Other: '🏆'
 };
 
@@ -114,9 +115,13 @@ export default function DashboardPage() {
           aria-hidden="true"
         >
           <span className="hero-sport-shadow" />
-          <span className="hero-sport-object">
-            {SPORT_HERO_ICON[state.settings.sport] || SPORT_HERO_ICON.Other}
-          </span>
+          {state.settings.sport === 'Badminton' ? (
+            <BadmintonShuttle className="hero-badminton-shuttle" />
+          ) : (
+            <span className="hero-sport-object">
+              {SPORT_HERO_ICON[state.settings.sport] || SPORT_HERO_ICON.Other}
+            </span>
+          )}
         </div>
       </section>
 
