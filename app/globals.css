@@ -1294,3 +1294,175 @@ html[data-theme="dark"] .delete-warning{
   border-color:#6d2c38;
   color:#ffb2bd;
 }
+
+
+/* Premium CSS badminton shuttle — no racket, no image asset */
+.badminton-shuttle{
+  position:relative;
+  display:block;
+  width:92px;
+  height:118px;
+  transform-origin:50% 78%;
+  filter:drop-shadow(0 16px 18px rgba(0,0,0,.18));
+}
+.badminton-shuttle-feathers{
+  position:absolute;
+  left:50%;
+  bottom:38px;
+  width:0;
+  height:0;
+}
+.badminton-shuttle .shuttle-feather{
+  position:absolute;
+  left:-9px;
+  bottom:-2px;
+  width:18px;
+  height:78px;
+  transform-origin:50% 100%;
+  border:1px solid rgba(208,220,234,.92);
+  border-bottom:0;
+  border-radius:11px 11px 3px 3px;
+  clip-path:polygon(50% 0,84% 9%,100% 86%,67% 100%,33% 100%,0 86%,16% 9%);
+  background:
+    repeating-linear-gradient(90deg,rgba(174,190,208,.24) 0 1px,transparent 1px 5px),
+    repeating-linear-gradient(0deg,rgba(174,190,208,.18) 0 1px,transparent 1px 8px),
+    linear-gradient(180deg,#ffffff 0%,#f7faff 56%,#e9eff7 100%);
+  box-shadow:inset 0 0 7px rgba(114,139,166,.10);
+}
+.badminton-shuttle .shuttle-feather-1{transform:translateX(-2px) rotate(-38deg) scaleY(.88)}
+.badminton-shuttle .shuttle-feather-2{transform:translateX(-1px) rotate(-26deg) scaleY(.96)}
+.badminton-shuttle .shuttle-feather-3{transform:rotate(-13deg) scaleY(1.02)}
+.badminton-shuttle .shuttle-feather-4{transform:rotate(0deg) scaleY(1.05)}
+.badminton-shuttle .shuttle-feather-5{transform:rotate(13deg) scaleY(1.02)}
+.badminton-shuttle .shuttle-feather-6{transform:translateX(1px) rotate(26deg) scaleY(.96)}
+.badminton-shuttle .shuttle-feather-7{transform:translateX(2px) rotate(38deg) scaleY(.88)}
+
+.badminton-shuttle-ring{
+  position:absolute;
+  left:50%;
+  width:61px;
+  height:13px;
+  border-top:2px solid rgba(248,251,255,.98);
+  border-radius:50%;
+  transform:translateX(-50%);
+  box-shadow:0 -1px 0 rgba(137,157,180,.18);
+}
+.badminton-shuttle-ring.ring-a{bottom:39px}
+.badminton-shuttle-ring.ring-b{bottom:34px;width:53px;opacity:.92}
+.badminton-shuttle-band{
+  position:absolute;
+  left:50%;
+  bottom:27px;
+  width:47px;
+  height:11px;
+  transform:translateX(-50%);
+  border-radius:50% 50% 35% 35%;
+  background:linear-gradient(180deg,#184d98 0%,#0b356f 100%);
+  box-shadow:
+    inset 0 2px 2px rgba(255,255,255,.18),
+    0 2px 3px rgba(0,0,0,.12);
+}
+.badminton-shuttle-cork{
+  position:absolute;
+  left:50%;
+  bottom:0;
+  width:42px;
+  height:37px;
+  transform:translateX(-50%);
+  border:1px solid rgba(210,218,226,.8);
+  border-radius:46% 46% 52% 52% / 35% 35% 65% 65%;
+  background:
+    radial-gradient(circle at 38% 28%,rgba(255,255,255,.9) 0 12%,transparent 13%),
+    linear-gradient(145deg,#ffffff 0%,#f5f7fa 48%,#dfe5eb 100%);
+  box-shadow:
+    inset -5px -6px 10px rgba(113,129,145,.10),
+    0 5px 10px rgba(0,0,0,.11);
+}
+
+/* Current tournament hero badminton flight */
+.hero-badminton-shuttle{
+  width:96px;
+  height:123px;
+  animation:hero-premium-shuttle-flight 3.4s cubic-bezier(.45,.05,.55,.95) infinite;
+}
+.hero-sport-badminton .hero-sport-shadow{
+  width:72px;
+  animation-duration:3.4s;
+}
+@keyframes hero-premium-shuttle-flight{
+  0%,100%{transform:translate3d(-22px,15px,0) rotate(-38deg)}
+  24%{transform:translate3d(-6px,-18px,0) rotate(-29deg)}
+  52%{transform:translate3d(22px,-32px,0) rotate(-15deg)}
+  76%{transform:translate3d(34px,-5px,0) rotate(4deg)}
+  90%{transform:translate3d(8px,8px,0) rotate(-18deg)}
+}
+
+/* Shared ambient badminton motion also uses shuttle only */
+.sport-motion-badminton .sport-motion-object{display:none}
+.sport-motion-shuttle{
+  position:absolute;
+  top:12%;
+  left:-120px;
+  width:92px;
+  height:118px;
+  animation:sport-shuttle-travel 20s linear infinite;
+}
+.sport-motion-shuttle .badminton-shuttle{
+  transform:scale(.72) rotate(-28deg);
+}
+.sport-motion-shuttle.secondary{
+  top:64%;
+  left:auto;
+  right:-120px;
+  opacity:.55;
+  animation:sport-shuttle-travel-reverse 27s linear infinite;
+}
+.sport-motion-shuttle.secondary .badminton-shuttle{
+  transform:scale(.54) rotate(22deg);
+}
+@keyframes sport-shuttle-travel{
+  0%{transform:translate3d(0,40px,0) rotate(-8deg)}
+  25%{transform:translate3d(calc(25vw + 55px),-15px,0) rotate(3deg)}
+  55%{transform:translate3d(calc(55vw + 100px),45px,0) rotate(12deg)}
+  78%{transform:translate3d(calc(78vw + 140px),-22px,0) rotate(0deg)}
+  100%{transform:translate3d(calc(100vw + 230px),24px,0) rotate(-8deg)}
+}
+@keyframes sport-shuttle-travel-reverse{
+  0%{transform:translate3d(0,-20px,0) rotate(6deg)}
+  50%{transform:translate3d(calc(-50vw - 100px),35px,0) rotate(-10deg)}
+  100%{transform:translate3d(calc(-100vw - 230px),-10px,0) rotate(4deg)}
+}
+
+@media(max-width:900px){
+  .hero-badminton-shuttle{width:78px;height:101px;transform-origin:center}
+  .hero-badminton-shuttle .shuttle-feather{height:65px}
+  .hero-badminton-shuttle .badminton-shuttle-feathers{bottom:33px}
+  .hero-badminton-shuttle .badminton-shuttle-ring.ring-a{bottom:34px}
+  .hero-badminton-shuttle .badminton-shuttle-ring.ring-b{bottom:29px}
+  .hero-badminton-shuttle .badminton-shuttle-band{bottom:23px;width:40px;height:9px}
+  .hero-badminton-shuttle .badminton-shuttle-cork{width:36px;height:32px}
+}
+@media(max-width:640px){
+  .hero-badminton-shuttle{
+    width:55px;
+    height:72px;
+  }
+  .hero-badminton-shuttle .shuttle-feather{
+    left:-5px;
+    width:10px;
+    height:43px;
+  }
+  .hero-badminton-shuttle .badminton-shuttle-feathers{bottom:24px}
+  .hero-badminton-shuttle .badminton-shuttle-ring{width:39px;height:8px}
+  .hero-badminton-shuttle .badminton-shuttle-ring.ring-a{bottom:25px}
+  .hero-badminton-shuttle .badminton-shuttle-ring.ring-b{bottom:21px;width:34px}
+  .hero-badminton-shuttle .badminton-shuttle-band{bottom:17px;width:30px;height:7px}
+  .hero-badminton-shuttle .badminton-shuttle-cork{width:27px;height:24px}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-badminton-shuttle,
+  .sport-motion-shuttle{animation:none!important}
+  .hero-badminton-shuttle{transform:rotate(-24deg)!important}
+  .sport-motion-shuttle{left:78%;top:12%;opacity:.45}
+  .sport-motion-shuttle.secondary{display:none}
+}
