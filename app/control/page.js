@@ -15,6 +15,8 @@ export default function MatchControlPage() {
   const [message, setMessage] = useState('');
   const [scoreA, setScoreA] = useState(0);
   const [scoreB, setScoreB] = useState(0);
+  const [outcomeType, setOutcomeType] = useState('normal');
+  const [specialWinnerId, setSpecialWinnerId] = useState('');
 
   const teamMap = useMemo(
     () => Object.fromEntries(state.teams.map((team) => [team.id, team])),
@@ -47,6 +49,8 @@ export default function MatchControlPage() {
     if (!selectedMatch) return;
     setScoreA(Number(selectedMatch.scoreA ?? 0));
     setScoreB(Number(selectedMatch.scoreB ?? 0));
+    setOutcomeType(selectedMatch.resultType || 'normal');
+    setSpecialWinnerId(selectedMatch.winnerOverrideId || '');
   }, [selectedMatch?.id]);
 
   useEffect(() => {
@@ -64,13 +68,9 @@ export default function MatchControlPage() {
     const durationSec = Math.max(0, Number(minutes) || 0) * 60;
     updateMatch(selectedMatch.id, {
       status: 'live',
-      timer: {
-        phase,
-        durationSec,
-        elapsedSec: 0,
-        startedAt: Date.now(),
-        running: true
-      }
+      resultType: 'normal',
+      winnerOverrideId: null,
+      timer: { phase, durationSec, elapsedSec: 0, startedAt: Date.now(), running: true }
     });
     setNow(Date.now());
     setMessage(`${timerPhaseLabel(phase)} started.`);
@@ -120,6 +120,34 @@ export default function MatchControlPage() {
 
   function finishMatch() {
     if (!selectedMatch) return;
+    const elapsedSec = selectedMatch.timer ? timerElapsedSeconds(selectedMatch.timer, Date.now()) : 0;
+    const finishedTimer = {
+      ...(selectedMatch.timer || {}),
+      phase: 'finished',
+      elapsedSec,
+      startedAt: null,
+      running: false
+    };
+
+    if (outcomeType === 'walkover' || outcomeType === 'forfeit') {
+      if (![teamAId, teamBId].includes(specialWinnerId)) {
+        setMessage('Choose the team that is awarded the match.');
+        return;
+      }
+      const winningSets = Math.max(1, Math.ceil(Number(state.settings.bestOfSets || 3) / 2));
+      const winnerIsA = specialWinnerId === teamAId;
+      updateMatch(selectedMatch.id, {
+        scoreA: winnerIsA ? winningSets : 0,
+        scoreB: winnerIsA ? 0 : winningSets,
+        status: 'final',
+        resultType: outcomeType,
+        winnerOverrideId: specialWinnerId,
+        timer: finishedTimer
+      });
+      setMessage(`${outcomeType === 'walkover' ? 'Walkover' : 'Forfeit'} recorded. Winner advanced automatically where applicable.`);
+      return;
+    }
+
     const a = Number(scoreA);
     const b = Number(scoreB);
     if (!Number.isFinite(a) || !Number.isFinite(b)) {
@@ -130,18 +158,13 @@ export default function MatchControlPage() {
       setMessage('A final match result cannot be a tie.');
       return;
     }
-    const elapsedSec = selectedMatch.timer ? timerElapsedSeconds(selectedMatch.timer, Date.now()) : 0;
     updateMatch(selectedMatch.id, {
       scoreA: a,
       scoreB: b,
       status: 'final',
-      timer: {
-        ...(selectedMatch.timer || {}),
-        phase: 'finished',
-        elapsedSec,
-        startedAt: null,
-        running: false
-      }
+      resultType: 'normal',
+      winnerOverrideId: null,
+      timer: finishedTimer
     });
     setMessage(`Match ${selectedMatch.matchNo} completed. Winner advanced automatically where applicable.`);
   }
@@ -163,10 +186,7 @@ export default function MatchControlPage() {
       </section>
 
       <section className="panel control-selector">
-        <div>
-          <p className="eyebrow">MATCH SELECTION</p>
-          <h3>Choose the match to control</h3>
-        </div>
+        <div><p className="eyebrow">MATCH SELECTION</p><h3>Choose the match to control</h3></div>
         <select value={selectedId} onChange={(event) => { setSelectedId(event.target.value); setMessage(''); }}>
           <option value="">Select a match</option>
           {playableMatches.map((match) => {
@@ -220,13 +240,36 @@ export default function MatchControlPage() {
             <aside className="control-score-card">
               <p className="eyebrow">LIVE SCORE</p>
               <h3>Match result</h3>
-              <div className="control-score-grid">
-                <label><span>{teamName(teamAId)}</span><input type="number" min="0" max="99" value={scoreA} onChange={(event) => setScoreA(event.target.value)} /></label>
-                <strong>:</strong>
-                <label><span>{teamName(teamBId)}</span><input type="number" min="0" max="99" value={scoreB} onChange={(event) => setScoreB(event.target.value)} /></label>
-              </div>
-              <p className="muted">Finish the match only after the official result is confirmed. Knockout winners advance automatically.</p>
-              <button className="btn btn-primary control-finish-btn" onClick={finishMatch}>END MATCH & SAVE RESULT</button>
+
+              <label className="control-outcome-select">Outcome
+                <select value={outcomeType} onChange={(event) => { setOutcomeType(event.target.value); if (event.target.value === 'normal') setSpecialWinnerId(''); }}>
+                  <option value="normal">Normal result</option>
+                  <option value="walkover">Walkover</option>
+                  <option value="forfeit">Forfeit</option>
+                </select>
+              </label>
+
+              {outcomeType === 'normal' ? (
+                <div className="control-score-grid">
+                  <label><span>{teamName(teamAId)}</span><input type="number" min="0" max="99" value={scoreA} onChange={(event) => setScoreA(event.target.value)} /></label>
+                  <strong>:</strong>
+                  <label><span>{teamName(teamBId)}</span><input type="number" min="0" max="99" value={scoreB} onChange={(event) => setScoreB(event.target.value)} /></label>
+                </div>
+              ) : (
+                <div className="control-special-outcome">
+                  <p>{outcomeType === 'walkover' ? 'Award a walkover to:' : 'Award the match after a forfeit to:'}</p>
+                  <select value={specialWinnerId} onChange={(event) => setSpecialWinnerId(event.target.value)}>
+                    <option value="">Choose winner</option>
+                    <option value={teamAId}>{teamName(teamAId)}</option>
+                    <option value={teamBId}>{teamName(teamBId)}</option>
+                  </select>
+                </div>
+              )}
+
+              <p className="muted">Finish only after the official result is confirmed. Knockout winners advance automatically.</p>
+              <button className="btn btn-primary control-finish-btn" onClick={finishMatch}>
+                {outcomeType === 'normal' ? 'END MATCH & SAVE RESULT' : `CONFIRM ${outcomeType.toUpperCase()}`}
+              </button>
             </aside>
           </section>
 
@@ -237,11 +280,13 @@ export default function MatchControlPage() {
                 {liveMatches.map((match) => {
                   const [aId, bId] = resolvedTeams(match, state.matches);
                   const left = match.timer ? timerRemainingSeconds(match.timer, now) : 0;
-                  return <button key={match.id} className={match.id === selectedId ? 'court-live-card selected' : 'court-live-card'} onClick={() => setSelectedId(match.id)}>
-                    <span>{match.court || 'Court'}</span>
-                    <strong>{teamName(aId)} <em>vs</em> {teamName(bId)}</strong>
-                    <small>{timerPhaseLabel(match.timer?.phase)} • {match.timer ? formatTimer(left) : 'Live'}</small>
-                  </button>;
+                  return (
+                    <button key={match.id} className={match.id === selectedId ? 'court-live-card selected' : 'court-live-card'} onClick={() => setSelectedId(match.id)}>
+                      <span>{match.court || 'Court'}</span>
+                      <strong>{teamName(aId)} <em>vs</em> {teamName(bId)}</strong>
+                      <small>{timerPhaseLabel(match.timer?.phase)} • {match.timer ? formatTimer(left) : 'Live'}</small>
+                    </button>
+                  );
                 })}
               </div>
             ) : <div className="empty-mini">No match is currently live.</div>}
