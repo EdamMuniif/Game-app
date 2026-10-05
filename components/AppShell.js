@@ -22,7 +22,8 @@ const mobilePrimary = [
   ['/', '⌂', 'Home'],
   ['/teams', '👥', 'Teams'],
   ['/draw', '🎲', 'Draw'],
-  ['/matches', '🏐', 'Matches']
+  ['/matches', '🏐', 'Matches'],
+  ['/settings', '⚙', 'Settings']
 ];
 
 export default function AppShell({ pageTitle, children }) {
@@ -58,8 +59,6 @@ export default function AppShell({ pageTitle, children }) {
     }
     event.target.value = '';
   }
-
-  const moreActive = !mobilePrimary.some(([href]) => pathname === href);
 
   return (
     <div className="app-shell">
@@ -149,10 +148,6 @@ export default function AppShell({ pageTitle, children }) {
             <strong>{label}</strong>
           </Link>
         ))}
-        <button className={moreActive ? 'active' : ''} type="button" onClick={() => setMobileNavOpen(true)}>
-          <span aria-hidden="true">☰</span>
-          <strong>More</strong>
-        </button>
       </nav>
     </div>
   );
