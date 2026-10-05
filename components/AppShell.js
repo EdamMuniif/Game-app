@@ -100,7 +100,7 @@ export default function AppShell({ pageTitle, children }) {
           <span />
         </button>
         <div className="mobile-appbar-title">
-          <strong>{state.settings.tournamentName}</strong>
+          <strong>SRC Tournament Manager</strong>
           <span>{pageTitle}</span>
         </div>
         <button
@@ -122,7 +122,7 @@ export default function AppShell({ pageTitle, children }) {
 
         <div className="brand">
           <div className="brand-ball" aria-hidden="true">◉</div>
-          <div><strong>{state.settings.tournamentName}</strong><span>Tournament Manager</span></div>
+          <div><strong>Shipyard Recreation Club</strong><span>Tournament Management System</span></div>
         </div>
 
         <nav className="nav-list">
@@ -177,7 +177,7 @@ export default function AppShell({ pageTitle, children }) {
         <div className="content-frame">
           <header className="topbar">
             <div className="topbar-title">
-              <p className="eyebrow">VOLLEYBALL TOURNAMENT</p>
+              <p className="eyebrow">SHIPYARD RECREATION CLUB</p>
               <h1>{pageTitle}</h1>
             </div>
             <div className="topbar-actions">
