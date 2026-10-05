@@ -714,3 +714,15 @@ html[data-theme="dark"] .progress-fill{
     border-color:#314a63;
   }
 }
+
+
+/* Icon-only theme toggle */
+.theme-toggle{
+  width:44px;
+  min-width:44px;
+  height:44px;
+  min-height:44px;
+  padding:0;
+  gap:0;
+}
+.theme-toggle>strong{display:none}
