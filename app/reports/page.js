@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import AppShell from '../../components/AppShell';
 import { useTournament } from '../../lib/tournament-context';
 import {
@@ -8,7 +8,8 @@ import {
 } from '../../lib/tournament';
 
 export default function ReportsPage() {
-  const { state } = useTournament();
+  const { state, exportBackup, importBackup, isAdmin, requestAdmin } = useTournament();
+  const backupFileRef = useRef(null);
   const [mode, setMode] = useState('all');
   const teamMap = useMemo(() => Object.fromEntries(state.teams.map((team) => [team.id, team])), [state.teams]);
   const groups = groupedTeams(state.teams);
@@ -23,6 +24,29 @@ export default function ReportsPage() {
 
   function show(section) {
     return mode === 'all' || mode === section;
+  }
+
+  function requireAdmin(action) {
+    if (isAdmin) {
+      action();
+      return;
+    }
+    requestAdmin('Admin access is required for tournament backup tools.');
+  }
+
+  async function handleBackupImport(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const ok = window.confirm('Import this backup and replace current tournament data?');
+      if (ok) importBackup(text);
+    } catch {
+      window.alert('Invalid backup file.');
+    } finally {
+      event.target.value = '';
+    }
   }
 
   return (
@@ -44,6 +68,9 @@ export default function ReportsPage() {
             <option value="bracket">Knockout bracket sheet</option>
           </select>
           <button className="btn btn-primary" onClick={() => window.print()}>Print / Save PDF</button>
+          <button className="btn btn-ghost" onClick={() => requireAdmin(exportBackup)}>Export backup</button>
+          <button className="btn btn-ghost" onClick={() => requireAdmin(() => backupFileRef.current?.click())}>Import backup</button>
+          <input ref={backupFileRef} type="file" accept="application/json" hidden onChange={handleBackupImport} />
         </div>
       </section>
 
