@@ -13,6 +13,7 @@ const navItems = [
   ['/control', '⏱', 'Match Control'],
   ['/bracket', '◫', 'Bracket'],
   ['/live', '◉', 'Live View'],
+  ['/reports', '▤', 'Reports'],
   ['/rules', '📋', 'Rules'],
   ['/settings', '⚙', 'Settings']
 ];
