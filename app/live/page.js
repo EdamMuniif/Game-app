@@ -23,8 +23,8 @@ export default function LivePage() {
   const champion = finalMatch?.winnerId ? teamMap[finalMatch.winnerId] : null;
 
   useEffect(() => {
-    if (!liveMatch?.timer?.running) return undefined;
-    const timer = window.setInterval(() => setNow(Date.now()), 250);
+    const intervalMs = liveMatch?.timer?.running ? 250 : 1000;
+    const timer = window.setInterval(() => setNow(Date.now()), intervalMs);
     return () => window.clearInterval(timer);
   }, [liveMatch?.id, liveMatch?.timer?.running]);
 
@@ -39,16 +39,48 @@ export default function LivePage() {
   const [nextA, nextB] = matchTeams(nextMatch);
   const liveRemaining = liveMatch?.timer ? timerRemainingSeconds(liveMatch.timer, now) : null;
 
+  const tournamentStart = useMemo(() => {
+    const date = state.settings.date;
+    const time = state.settings.startTime || '00:00';
+    if (!date) return null;
+    const timestamp = Date.parse(`${date}T${time}:00+05:00`);
+    return Number.isFinite(timestamp) ? timestamp : null;
+  }, [state.settings.date, state.settings.startTime]);
+
+  const startRemaining = tournamentStart ? Math.max(0, Math.floor((tournamentStart - now) / 1000)) : 0;
+  const showStartCountdown = Boolean(tournamentStart && startRemaining > 0);
+  const countdown = {
+    days: Math.floor(startRemaining / 86400),
+    hours: Math.floor((startRemaining % 86400) / 3600),
+    minutes: Math.floor((startRemaining % 3600) / 60),
+    seconds: startRemaining % 60
+  };
+
   return (
     <div className="public-live-page">
       <header className="public-live-header">
         <div>
-          <div className="public-live-indicator" aria-label="Live"><span className="public-live-dot" /></div>
+          <div className="public-live-indicator" aria-label="Live tournament view"><span className="public-live-dot" /><strong>LIVE TOURNAMENT VIEW</strong></div>
           <h1>{state.settings.tournamentName}</h1>
           <p>{state.settings.venue} • {formatDate(state.settings.date)}</p>
         </div>
         <Link className="btn btn-light" href="/">Tournament Manager</Link>
       </header>
+
+      {showStartCountdown && (
+        <section className="tournament-countdown" aria-label="Tournament start countdown">
+          <div className="tournament-countdown-head">
+            <span>TOURNAMENT STARTS IN</span>
+            <small>{formatDate(state.settings.date)} • {state.settings.startTime || '00:00'}</small>
+          </div>
+          <div className="tournament-countdown-grid">
+            <div><strong>{String(countdown.days).padStart(2, '0')}</strong><span>Days</span></div>
+            <div><strong>{String(countdown.hours).padStart(2, '0')}</strong><span>Hours</span></div>
+            <div><strong>{String(countdown.minutes).padStart(2, '0')}</strong><span>Minutes</span></div>
+            <div><strong>{String(countdown.seconds).padStart(2, '0')}</strong><span>Seconds</span></div>
+          </div>
+        </section>
+      )}
 
       {champion && <section className="champion-card"><span>🏆</span><div><small>CHAMPION</small><strong>{champion.name}</strong></div></section>}
 
