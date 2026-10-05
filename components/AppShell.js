@@ -35,7 +35,7 @@ export default function AppShell({ pageTitle, children }) {
   const [theme, setTheme] = useState('light');
   const {
     state, exportBackup, importBackup, isAdmin, adminPromptOpen, setAdminPromptOpen,
-    adminNotice, setAdminNotice, loginAdmin, logoutAdmin, syncStatus, lastSync, migrationAvailable
+    adminNotice, setAdminNotice, loginAdmin, logoutAdmin, syncStatus, migrationAvailable
   } = useTournament();
 
   useEffect(() => {
@@ -160,10 +160,29 @@ export default function AppShell({ pageTitle, children }) {
             <button className="sidebar-utility-btn" type="button" onClick={exportBackup}>Export backup</button>
             <button className="sidebar-utility-btn" type="button" onClick={() => fileRef.current?.click()}>Import backup</button>
           </div>
-          <div className="mini-status">
-            <span>{syncStatus === 'online' ? 'Shared online' : syncStatus === 'saving' ? 'Saving…' : syncStatus === 'error' ? 'Sync issue' : 'Local only'}</span>
-            <span className={`status-dot ${syncStatus === 'error' ? 'error' : syncStatus === 'saving' ? 'saving' : ''}`} />
-          </div>
+          {isAdmin ? (
+            <button
+              className={`sidebar-admin-live ${syncStatus === 'error' || syncStatus === 'local' ? 'has-error' : ''}`}
+              type="button"
+              onClick={logoutAdmin}
+              title="Admin is active. Click to log out."
+            >
+              <strong>{syncStatus === 'error' || syncStatus === 'local' ? 'Admin - sync issue' : 'Admin - live'}</strong>
+              <span aria-hidden="true">{syncStatus === 'error' || syncStatus === 'local' ? '🔴' : '🟢'}</span>
+            </button>
+          ) : (
+            <button
+              className="sidebar-admin-live login"
+              type="button"
+              onClick={() => {
+                setAdminNotice('Enter the admin PIN to edit tournament data.');
+                setAdminPromptOpen(true);
+                setMobileNavOpen(false);
+              }}
+            >
+              <strong>Admin login</strong>
+            </button>
+          )}
         </div>
       </aside>
 
@@ -191,14 +210,6 @@ export default function AppShell({ pageTitle, children }) {
               >
                 <span aria-hidden="true">{theme === 'dark' ? '☾' : '☀'}</span>
               </button>
-              <div className={`sync-pill sync-${syncStatus}`}>
-                <span className="sync-dot" />
-                <strong>{syncStatus === 'online' ? 'Shared' : syncStatus === 'saving' ? 'Saving' : syncStatus === 'error' ? 'Sync issue' : 'Local'}</strong>
-                {lastSync && syncStatus === 'online' && <small>{lastSync}</small>}
-              </div>
-              {isAdmin
-                ? <button className="btn btn-ghost" onClick={logoutAdmin}>Admin ✓</button>
-                : <button className="btn btn-primary" onClick={() => { setAdminNotice('Enter the admin PIN to edit tournament data.'); setAdminPromptOpen(true); }}>Admin login</button>}
               <button className="btn btn-ghost topbar-secondary-action" onClick={exportBackup}>Export backup</button>
               <button className="btn btn-ghost topbar-secondary-action" onClick={() => fileRef.current?.click()}>Import backup</button>
             </div>
