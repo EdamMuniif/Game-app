@@ -32,6 +32,7 @@ export default function AppShell({ pageTitle, children }) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [adminPin, setAdminPin] = useState('');
   const [adminError, setAdminError] = useState('');
+  const [theme, setTheme] = useState('light');
   const {
     state, exportBackup, importBackup, isAdmin, adminPromptOpen, setAdminPromptOpen,
     adminNotice, setAdminNotice, loginAdmin, logoutAdmin, syncStatus, lastSync, migrationAvailable
@@ -40,6 +41,28 @@ export default function AppShell({ pageTitle, children }) {
   useEffect(() => {
     setMobileNavOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    const current = document.documentElement.dataset.theme
+      || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    setTheme(current);
+  }, []);
+
+  function toggleTheme() {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    document.documentElement.dataset.theme = next;
+    document.documentElement.style.colorScheme = next;
+    localStorage.setItem('spike-cup-theme', next);
+
+    let meta = document.querySelector('meta[name="theme-color"]');
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.setAttribute('name', 'theme-color');
+      document.head.appendChild(meta);
+    }
+    meta.setAttribute('content', next === 'dark' ? '#07111f' : '#f4f8fc');
+  }
 
   useEffect(() => {
     if (!mobileNavOpen) return undefined;
@@ -96,6 +119,15 @@ export default function AppShell({ pageTitle, children }) {
           <strong>{state.settings.tournamentName}</strong>
           <span>{pageTitle}</span>
         </div>
+        <button
+          className="theme-toggle theme-toggle-mobile"
+          type="button"
+          aria-label={theme === 'dark' ? 'Switch to day mode' : 'Switch to night mode'}
+          title={theme === 'dark' ? 'Day mode' : 'Night mode'}
+          onClick={toggleTheme}
+        >
+          <span aria-hidden="true">{theme === 'dark' ? '☀' : '☾'}</span>
+        </button>
       </header>
 
       <aside className={`sidebar ${mobileNavOpen ? 'mobile-open' : ''}`} aria-label="Primary navigation">
@@ -150,6 +182,16 @@ export default function AppShell({ pageTitle, children }) {
               <h1>{pageTitle}</h1>
             </div>
             <div className="topbar-actions">
+              <button
+                className="theme-toggle"
+                type="button"
+                onClick={toggleTheme}
+                aria-label={theme === 'dark' ? 'Switch to day mode' : 'Switch to night mode'}
+                title={theme === 'dark' ? 'Day mode' : 'Night mode'}
+              >
+                <span aria-hidden="true">{theme === 'dark' ? '☀' : '☾'}</span>
+                <strong>{theme === 'dark' ? 'Day' : 'Night'}</strong>
+              </button>
               <div className={`sync-pill sync-${syncStatus}`}>
                 <span className="sync-dot" />
                 <strong>{syncStatus === 'online' ? 'Shared' : syncStatus === 'saving' ? 'Saving' : syncStatus === 'error' ? 'Sync issue' : 'Local'}</strong>
