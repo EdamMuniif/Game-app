@@ -4,7 +4,7 @@ import { useMemo, useRef, useState } from 'react';
 import AppShell from '../../components/AppShell';
 import { useTournament } from '../../lib/tournament-context';
 import {
-  formatDate, formatLabel, groupStandings, groupedTeams, matchOutcomeLabel, resolvedTeams
+  drawValue, formatDate, formatLabel, groupStandings, groupedTeams, matchOutcomeLabel, resolvedTeams
 } from '../../lib/tournament';
 
 export default function ReportsPage() {
@@ -13,7 +13,8 @@ export default function ReportsPage() {
   const [mode, setMode] = useState('all');
   const teamMap = useMemo(() => Object.fromEntries(state.teams.map((team) => [team.id, team])), [state.teams]);
   const groups = groupedTeams(state.teams);
-  const sortedDraw = [...state.teams].filter((team) => team.letter).sort((a, b) => a.letter.localeCompare(b.letter));
+  const sortedDraw = [...state.teams].filter((team) => drawValue(team) != null).sort((a, b) => String(drawValue(a)).localeCompare(String(drawValue(b)), undefined, { numeric: true }));
+  const maxRoster = Math.max(1, Number(state.settings.maxRoster) || 12);
   const knockoutMatches = state.matches.filter((match) => match.kind === 'knockout');
   const championMatch = knockoutMatches.find((match) => match.round === 'Final' && match.status === 'final');
   const champion = championMatch?.winnerId ? teamMap[championMatch.winnerId] : null;
@@ -91,7 +92,7 @@ export default function ReportsPage() {
             <div className="report-sheet-title"><span>01</span><div><p>TEAM REGISTRATION</p><h2>Submitted teams</h2></div></div>
             <table className="report-table">
               <thead><tr><th>#</th><th>Team</th><th>Department</th><th>Players</th><th>Captain</th><th>Manager</th><th>Contact</th></tr></thead>
-              <tbody>{state.teams.map((team, index) => <tr key={team.id}><td>{index + 1}</td><td><strong>{team.name}</strong></td><td>{team.department || '—'}</td><td>{Array.isArray(team.players) ? `${team.players.length}/12` : '0/12'}</td><td>{team.captain || '—'}</td><td>{team.manager || '—'}</td><td>{team.contact || '—'}</td></tr>)}</tbody>
+              <tbody>{state.teams.map((team, index) => <tr key={team.id}><td>{index + 1}</td><td><strong>{team.name}</strong></td><td>{team.department || '—'}</td><td>{Array.isArray(team.players) ? `${team.players.length}/${maxRoster}` : `0/${maxRoster}`}</td><td>{team.captain || '—'}</td><td>{team.manager || '—'}</td><td>{team.contact || '—'}</td></tr>)}</tbody>
             </table>
           </section>
         )}
@@ -123,7 +124,7 @@ export default function ReportsPage() {
                         {!players.length && <tr><td colSpan="5">No players added.</td></tr>}
                       </tbody>
                     </table>
-                    <div className="report-roster-foot"><span>{players.length}/12 players</span><span>Captain: {team.captain || 'Not assigned'}</span></div>
+                    <div className="report-roster-foot"><span>{players.length}/{maxRoster} players</span><span>Captain: {team.captain || 'Not assigned'}</span></div>
                   </article>
                 );
               })}
@@ -133,10 +134,10 @@ export default function ReportsPage() {
 
         {show('draw') && (
           <section className="report-sheet">
-            <div className="report-sheet-title"><span>02</span><div><p>OFFICIAL DRAW</p><h2>Team letter assignments</h2></div></div>
+            <div className="report-sheet-title"><span>02</span><div><p>OFFICIAL DRAW</p><h2>Draw assignments</h2></div></div>
             <table className="report-table compact">
-              <thead><tr><th>Letter</th><th>Team</th><th>Department</th><th>Group</th></tr></thead>
-              <tbody>{sortedDraw.map((team) => <tr key={team.id}><td className="report-letter">{team.letter}</td><td><strong>{team.name}</strong></td><td>{team.department || '—'}</td><td>{team.group || '—'}</td></tr>)}</tbody>
+              <thead><tr><th>Position</th><th>Entry</th><th>Department</th><th>Group</th></tr></thead>
+              <tbody>{sortedDraw.map((team) => <tr key={team.id}><td className="report-letter">{drawValue(team)}</td><td><strong>{team.name}</strong></td><td>{team.department || '—'}</td><td>{team.group || '—'}</td></tr>)}</tbody>
             </table>
             {!sortedDraw.length && <p className="report-empty">Official draw has not been completed.</p>}
           </section>

@@ -4,12 +4,13 @@ import { useEffect, useMemo, useState } from 'react';
 import AppShell from '../../components/AppShell';
 import { useTournament } from '../../lib/tournament-context';
 import {
-  formatDate, formatTimer, resolvedTeams, timerElapsedSeconds,
+  formatDate, formatTimer, resolvedTeams, sportScoringMode, timerElapsedSeconds,
   timerPhaseLabel, timerRemainingSeconds
 } from '../../lib/tournament';
 
 export default function MatchControlPage() {
   const { state, updateMatch } = useTournament();
+  const scoringMode = sportScoringMode(state.settings.sport);
   const [selectedId, setSelectedId] = useState('');
   const [now, setNow] = useState(Date.now());
   const [message, setMessage] = useState('');
@@ -77,7 +78,10 @@ export default function MatchControlPage() {
   }
 
   function startMatch() {
-    beginPhase('period1', state.settings.halfMinutes);
+    const minutes = scoringMode === 'sets' || scoringMode === 'games'
+      ? state.settings.matchDurationMinutes
+      : state.settings.halfMinutes;
+    beginPhase('period1', minutes);
   }
 
   function pauseTimer() {
@@ -109,6 +113,7 @@ export default function MatchControlPage() {
   }
 
   function nextPhase() {
+    if (scoringMode === 'sets' || scoringMode === 'games') return;
     const phase = selectedMatch?.timer?.phase;
     if (phase === 'period1') {
       if (Number(state.settings.breakMinutes) > 0) beginPhase('break', state.settings.breakMinutes);
@@ -134,7 +139,8 @@ export default function MatchControlPage() {
         setMessage('Choose the team that is awarded the match.');
         return;
       }
-      const winningSets = Math.max(1, Math.ceil(Number(state.settings.bestOfSets || 3) / 2));
+      const bestOf = scoringMode === 'games' ? Number(state.settings.bestOfGames || 3) : Number(state.settings.bestOfSets || 3);
+      const winningSets = Math.max(1, Math.ceil(bestOf / 2));
       const winnerIsA = specialWinnerId === teamAId;
       updateMatch(selectedMatch.id, {
         scoreA: winnerIsA ? winningSets : 0,
@@ -148,14 +154,20 @@ export default function MatchControlPage() {
       return;
     }
 
+    if (scoringMode === 'sets' || scoringMode === 'games') {
+      updateMatch(selectedMatch.id, { timer: finishedTimer });
+      setMessage('Timer stopped. Use Matches → Result to record the official ' + (scoringMode === 'sets' ? 'set' : 'game') + ' scores.');
+      return;
+    }
+
     const a = Number(scoreA);
     const b = Number(scoreB);
     if (!Number.isFinite(a) || !Number.isFinite(b)) {
       setMessage('Enter a valid score for both teams.');
       return;
     }
-    if (a === b) {
-      setMessage('A final match result cannot be a tie.');
+    if (a === b && selectedMatch.kind === 'knockout') {
+      setMessage('A level knockout result requires a tie-break winner. Record it from Matches → Result.');
       return;
     }
     updateMatch(selectedMatch.id, {
@@ -164,15 +176,16 @@ export default function MatchControlPage() {
       status: 'final',
       resultType: 'normal',
       winnerOverrideId: null,
+      resultParticipantIds: [teamAId, teamBId],
       timer: finishedTimer
     });
-    setMessage(`Match ${selectedMatch.matchNo} completed. Winner advanced automatically where applicable.`);
+    setMessage('Match ' + selectedMatch.matchNo + ' completed. Standings and bracket were updated.');
   }
 
   const remaining = selectedMatch?.timer ? timerRemainingSeconds(selectedMatch.timer, now) : 0;
   const timerExpired = Boolean(selectedMatch?.timer && remaining === 0);
   const phase = selectedMatch?.timer?.phase || null;
-  const canNextPhase = phase === 'period1' || phase === 'break';
+  const canNextPhase = scoringMode !== 'sets' && scoringMode !== 'games' && (phase === 'period1' || phase === 'break');
 
   return (
     <AppShell pageTitle="Match Control">

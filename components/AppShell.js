@@ -4,9 +4,16 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useTournament } from '../lib/tournament-context';
+import SportMotionLayer from './SportMotionLayer';
+import TournamentAssistant from './TournamentAssistant';
 
-const navItems = [
-  ['/', '⌂', 'Home'],
+const mainNav = [
+  ['/', '⌂', 'Dashboard'],
+  ['/tournaments', '🏆', 'Tournaments'],
+  ['/datasheet', '▤', 'Datasheet']
+];
+
+const workspaceNav = [
   ['/teams', '👥', 'Teams'],
   ['/draw', '🎲', 'Draw'],
   ['/matches', '🏐', 'Matches'],
@@ -19,12 +26,18 @@ const navItems = [
 ];
 
 const mobilePrimary = [
-  ['/', '⌂', 'Home'],
+  ['/', '⌂', 'Dashboard'],
+  ['/tournaments', '🏆', 'Tournaments'],
   ['/teams', '👥', 'Teams'],
-  ['/draw', '🎲', 'Draw'],
   ['/matches', '🏐', 'Matches'],
-  ['/settings', '⚙', 'Settings']
+  ['/datasheet', '▤', 'Datasheet']
 ];
+
+function activePath(pathname, href) {
+  if (href === '/') return pathname === '/';
+  if (href === '/tournaments') return pathname === '/tournaments' || pathname.startsWith('/tournaments/');
+  return pathname === href;
+}
 
 export default function AppShell({ pageTitle, children }) {
   const pathname = usePathname();
@@ -33,8 +46,19 @@ export default function AppShell({ pageTitle, children }) {
   const [adminError, setAdminError] = useState('');
   const [theme, setTheme] = useState('light');
   const {
-    state, isAdmin, adminPromptOpen, setAdminPromptOpen,
-    adminNotice, setAdminNotice, loginAdmin, logoutAdmin, syncStatus, migrationAvailable
+    state,
+    tournaments,
+    selectedTournamentId,
+    selectTournament,
+    isAdmin,
+    adminPromptOpen,
+    setAdminPromptOpen,
+    adminNotice,
+    setAdminNotice,
+    loginAdmin,
+    logoutAdmin,
+    syncStatus,
+    migrationAvailable
   } = useTournament();
 
   useEffect(() => {
@@ -46,6 +70,15 @@ export default function AppShell({ pageTitle, children }) {
       || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     setTheme(current);
   }, []);
+
+  useEffect(() => {
+    if (!mobileNavOpen) return undefined;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mobileNavOpen]);
 
   function toggleTheme() {
     const next = theme === 'dark' ? 'light' : 'dark';
@@ -62,15 +95,6 @@ export default function AppShell({ pageTitle, children }) {
     }
     meta.setAttribute('content', next === 'dark' ? '#07111f' : '#f4f8fc');
   }
-
-  useEffect(() => {
-    if (!mobileNavOpen) return undefined;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [mobileNavOpen]);
 
   async function handleAdminLogin(event) {
     event.preventDefault();
@@ -114,22 +138,50 @@ export default function AppShell({ pageTitle, children }) {
         </button>
       </header>
 
-      <aside className={`sidebar ${mobileNavOpen ? 'mobile-open' : ''}`} aria-label="Primary navigation">
+      <aside className={'sidebar ' + (mobileNavOpen ? 'mobile-open' : '')} aria-label="Primary navigation">
         <div className="sidebar-mobile-head">
           <span>Navigation</span>
           <button className="sidebar-close-btn" type="button" aria-label="Close navigation" onClick={() => setMobileNavOpen(false)}>×</button>
         </div>
 
         <div className="brand">
-          <div className="brand-ball" aria-hidden="true">◉</div>
+          <div className="brand-ball" aria-hidden="true">SRC</div>
           <div><strong>Shipyard Recreation Club</strong><span>Tournament Management System</span></div>
         </div>
 
         <nav className="nav-list">
-          {navItems.map(([href, icon, label]) => (
+          <div className="nav-section-label">MAIN</div>
+          {mainNav.map(([href, icon, label]) => (
             <Link
               key={href}
-              className={`nav-item ${pathname === href ? 'active' : ''}`}
+              className={'nav-item ' + (activePath(pathname, href) ? 'active' : '')}
+              href={href}
+              onClick={() => setMobileNavOpen(false)}
+            >
+              <span aria-hidden="true">{icon}</span>
+              <strong>{label}</strong>
+            </Link>
+          ))}
+
+          <div className="nav-section-label workspace-label">CURRENT TOURNAMENT</div>
+          <div className="sidebar-tournament-select">
+            <select
+              value={selectedTournamentId || ''}
+              onChange={(event) => selectTournament(event.target.value)}
+              aria-label="Current tournament"
+            >
+              {tournaments.map((tournament) => (
+                <option key={tournament.id} value={tournament.id}>
+                  {tournament.settings.tournamentName}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {workspaceNav.map(([href, icon, label]) => (
+            <Link
+              key={href}
+              className={'nav-item nav-workspace ' + (activePath(pathname, href) ? 'active' : '')}
               href={href}
               onClick={() => setMobileNavOpen(false)}
             >
@@ -142,7 +194,7 @@ export default function AppShell({ pageTitle, children }) {
         <div className="sidebar-footer">
           {isAdmin ? (
             <button
-              className={`sidebar-admin-live ${syncStatus === 'error' || syncStatus === 'local' ? 'has-error' : ''}`}
+              className={'sidebar-admin-live ' + (syncStatus === 'error' || syncStatus === 'local' ? 'has-error' : '')}
               type="button"
               onClick={logoutAdmin}
               title="Admin is active. Click to log out."
@@ -167,20 +219,22 @@ export default function AppShell({ pageTitle, children }) {
       </aside>
 
       <button
-        className={`sidebar-overlay ${mobileNavOpen ? 'show' : ''}`}
+        className={'sidebar-overlay ' + (mobileNavOpen ? 'show' : '')}
         type="button"
         aria-label="Close navigation"
         onClick={() => setMobileNavOpen(false)}
       />
 
       <main className="main-content" id="main-content">
+        <SportMotionLayer sport={state.settings.sport} />
         <div className="content-frame">
           <header className="topbar">
             <div className="topbar-title">
-              <p className="eyebrow">SHIPYARD RECREATION CLUB</p>
+              <p className="eyebrow">{state.settings.sport || 'SPORT'} TOURNAMENT</p>
               <h1>{pageTitle}</h1>
             </div>
             <div className="topbar-actions">
+              <span className="active-tournament-chip">{state.settings.tournamentName}</span>
               <button
                 className="theme-toggle"
                 type="button"
@@ -192,18 +246,21 @@ export default function AppShell({ pageTitle, children }) {
               </button>
             </div>
           </header>
+
           {!isAdmin && (
             <div className="public-mode-banner">
               <span>Public view</span>
-              <strong>Tournament data is shared online. Admin PIN is required to make changes.</strong>
+              <strong>Only tournaments marked public are visible. Admin PIN is required to make changes.</strong>
               <button type="button" onClick={() => setAdminPromptOpen(true)}>Admin login</button>
             </div>
           )}
-          {migrationAvailable && (
+
+          {migrationAvailable && isAdmin && (
             <div className="migration-banner">
-              This browser has existing local tournament data. Sign in as admin to publish it to the shared tournament automatically.
+              Existing SPIKE CUP data has been upgraded to the multi-tournament database format.
             </div>
           )}
+
           {children}
         </div>
       </main>
@@ -238,9 +295,11 @@ export default function AppShell({ pageTitle, children }) {
         </div>
       )}
 
+      <TournamentAssistant />
+
       <nav className="mobile-bottom-nav" aria-label="Mobile navigation">
         {mobilePrimary.map(([href, icon, label]) => (
-          <Link key={href} className={pathname === href ? 'active' : ''} href={href}>
+          <Link key={href} className={activePath(pathname, href) ? 'active' : ''} href={href}>
             <span aria-hidden="true">{icon}</span>
             <strong>{label}</strong>
           </Link>
