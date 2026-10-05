@@ -37,6 +37,7 @@ export default function ReportsPage() {
           <select value={mode} onChange={(event) => setMode(event.target.value)}>
             <option value="all">Complete tournament report</option>
             <option value="teams">Team registration sheet</option>
+            <option value="rosters">Team roster sheets</option>
             <option value="draw">Official draw sheet</option>
             <option value="schedule">Match schedule</option>
             <option value="results">Results & standings</option>
@@ -62,9 +63,44 @@ export default function ReportsPage() {
           <section className="report-sheet">
             <div className="report-sheet-title"><span>01</span><div><p>TEAM REGISTRATION</p><h2>Submitted teams</h2></div></div>
             <table className="report-table">
-              <thead><tr><th>#</th><th>Team</th><th>Department</th><th>Captain</th><th>Manager</th><th>Contact</th></tr></thead>
-              <tbody>{state.teams.map((team, index) => <tr key={team.id}><td>{index + 1}</td><td><strong>{team.name}</strong></td><td>{team.department || '—'}</td><td>{team.captain || '—'}</td><td>{team.manager || '—'}</td><td>{team.contact || '—'}</td></tr>)}</tbody>
+              <thead><tr><th>#</th><th>Team</th><th>Department</th><th>Players</th><th>Captain</th><th>Manager</th><th>Contact</th></tr></thead>
+              <tbody>{state.teams.map((team, index) => <tr key={team.id}><td>{index + 1}</td><td><strong>{team.name}</strong></td><td>{team.department || '—'}</td><td>{Array.isArray(team.players) ? `${team.players.length}/12` : '0/12'}</td><td>{team.captain || '—'}</td><td>{team.manager || '—'}</td><td>{team.contact || '—'}</td></tr>)}</tbody>
             </table>
+          </section>
+        )}
+
+        {show('rosters') && (
+          <section className="report-sheet">
+            <div className="report-sheet-title"><span>02</span><div><p>TEAM ROSTERS</p><h2>Players, captains & managers</h2></div></div>
+            <div className="report-roster-grid">
+              {state.teams.map((team) => {
+                const players = Array.isArray(team.players) ? team.players : [];
+                return (
+                  <article className="report-roster-card" key={team.id}>
+                    <div className="report-roster-head">
+                      <div><strong>{team.name}</strong><span>{team.department || '—'}</span></div>
+                      <div><span>Manager</span><strong>{team.manager || '—'}</strong></div>
+                    </div>
+                    <table className="report-table compact">
+                      <thead><tr><th>#</th><th>Player</th><th>Jersey</th><th>Position</th><th>Role</th></tr></thead>
+                      <tbody>
+                        {players.map((player, index) => (
+                          <tr key={player.id}>
+                            <td>{index + 1}</td>
+                            <td><strong>{player.name}</strong></td>
+                            <td>{player.jersey || '—'}</td>
+                            <td>{player.position || '—'}</td>
+                            <td>{player.isCaptain ? 'Captain' : 'Player'}</td>
+                          </tr>
+                        ))}
+                        {!players.length && <tr><td colSpan="5">No players added.</td></tr>}
+                      </tbody>
+                    </table>
+                    <div className="report-roster-foot"><span>{players.length}/12 players</span><span>Captain: {team.captain || 'Not assigned'}</span></div>
+                  </article>
+                );
+              })}
+            </div>
           </section>
         )}
 
