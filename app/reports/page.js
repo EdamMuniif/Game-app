@@ -76,7 +76,7 @@ export default function ReportsPage() {
 
       <div className="report-print-root">
         <header className="report-print-header">
-          <div><span>VOLLEYBALL TOURNAMENT</span><h1>{state.settings.tournamentName}</h1></div>
+          <div><span>SHIPYARD RECREATION CLUB • {state.settings.sport || 'SPORT'} TOURNAMENT</span><h1>{state.settings.tournamentName}</h1></div>
           <dl>
             <div><dt>Venue</dt><dd>{state.settings.venue || '—'}</dd></div>
             <div><dt>Date</dt><dd>{formatDate(state.settings.date)}</dd></div>
@@ -205,7 +205,7 @@ export default function ReportsPage() {
 
         <footer className="report-print-footer">
           <span>{state.settings.tournamentName}</span>
-          <span>Generated from Tournament Manager</span>
+          <span>Generated from Shipyard Recreation Club Tournament Management System</span>
         </footer>
       </div>
     </AppShell>
