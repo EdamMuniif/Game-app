@@ -168,7 +168,7 @@ export default function AppShell({ pageTitle, children }) {
               title="Admin is active. Click to log out."
             >
               <strong>{syncStatus === 'error' || syncStatus === 'local' ? 'Admin - sync issue' : 'Admin - live'}</strong>
-              <span aria-hidden="true">{syncStatus === 'error' || syncStatus === 'local' ? '🔴' : '🟢'}</span>
+              <span className="admin-live-dot" aria-label={syncStatus === 'error' || syncStatus === 'local' ? 'Sync issue' : 'Live'} />
             </button>
           ) : (
             <button
