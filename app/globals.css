@@ -1873,3 +1873,76 @@ html[data-theme="dark"] .stage-header .chip{
     width:100%;
   }
 }
+
+
+/* Topbar tournament selector v1 */
+.topbar-tournament-select{
+  display:block;
+  min-width:0;
+}
+.topbar-tournament-select select{
+  width:min(260px,30vw);
+  min-width:180px;
+  height:42px;
+  padding:0 38px 0 13px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:var(--panel);
+  color:var(--text);
+  font-size:12px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.02em;
+  outline:none;
+  cursor:pointer;
+}
+.topbar-tournament-select select:focus{
+  border-color:#6ab6ff;
+  box-shadow:0 0 0 3px rgba(20,119,232,.12);
+}
+.sr-only{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  padding:0!important;
+  margin:-1px!important;
+  overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;
+  border:0!important;
+}
+html[data-theme="dark"] .topbar-tournament-select select{
+  background:#122335;
+  border-color:#2f4962;
+  color:#edf6ff;
+}
+@media(max-width:960px){
+  .topbar-actions{
+    width:auto;
+    margin-left:auto;
+  }
+  .topbar-tournament-select select{
+    width:min(220px,38vw);
+    min-width:150px;
+    height:40px;
+    font-size:11px;
+  }
+}
+@media(max-width:700px){
+  .topbar{
+    align-items:flex-start;
+  }
+  .topbar-actions{
+    width:100%;
+    justify-content:flex-end;
+    margin-top:8px;
+  }
+  .topbar-tournament-select{
+    flex:1 1 auto;
+  }
+  .topbar-tournament-select select{
+    width:100%;
+    min-width:0;
+    max-width:none;
+  }
+}
