@@ -164,21 +164,7 @@ export default function AppShell({ pageTitle, children }) {
             ))}
           </div>
 
-          <div className="nav-section-label workspace-label">CURRENT TOURNAMENT</div>
-          <div className="sidebar-tournament-select">
-            <select
-              value={selectedTournamentId || ''}
-              onChange={(event) => selectTournament(event.target.value)}
-              aria-label="Current tournament"
-            >
-              {tournaments.map((tournament) => (
-                <option key={tournament.id} value={tournament.id}>
-                  {tournament.settings.tournamentName}
-                </option>
-              ))}
-            </select>
-          </div>
-
+          <div className="nav-section-label workspace-label">TOURNAMENT</div>
           <div className="nav-workspace-grid">
             {workspaceNav.map(([href, icon, label]) => (
               <Link
@@ -237,7 +223,20 @@ export default function AppShell({ pageTitle, children }) {
               <h1>{pageTitle}</h1>
             </div>
             <div className="topbar-actions">
-              <span className="active-tournament-chip">{state.settings.tournamentName}</span>
+              <label className="topbar-tournament-select">
+                <span className="sr-only">Current tournament</span>
+                <select
+                  value={selectedTournamentId || ''}
+                  onChange={(event) => selectTournament(event.target.value)}
+                  aria-label="Current tournament"
+                >
+                  {tournaments.map((tournament) => (
+                    <option key={tournament.id} value={tournament.id}>
+                      {tournament.settings.tournamentName}
+                    </option>
+                  ))}
+                </select>
+              </label>
               <button
                 className="theme-toggle"
                 type="button"
