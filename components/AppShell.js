@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTournament } from '../lib/tournament-context';
 import SportMotionLayer from './SportMotionLayer';
 import TournamentAssistant from './TournamentAssistant';
@@ -42,6 +42,7 @@ function activePath(pathname, href) {
 export default function AppShell({ pageTitle, children }) {
   const pathname = usePathname();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const navRef = useRef(null);
   const [adminPin, setAdminPin] = useState('');
   const [adminError, setAdminError] = useState('');
   const [theme, setTheme] = useState('light');
@@ -63,6 +64,14 @@ export default function AppShell({ pageTitle, children }) {
   useEffect(() => {
     setMobileNavOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      const activeItem = navRef.current?.querySelector('.nav-item.active');
+      activeItem?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [pathname, mobileNavOpen]);
 
   useEffect(() => {
     const current = document.documentElement.dataset.theme
@@ -148,7 +157,7 @@ export default function AppShell({ pageTitle, children }) {
           <div><strong>Shipyard Recreation Club</strong><span>Tournament Management System</span></div>
         </div>
 
-        <nav className="nav-list">
+        <nav className="nav-list" ref={navRef}>
           <div className="nav-section-label">MAIN</div>
           {mainNav.map(([href, icon, label]) => (
             <Link
