@@ -1466,3 +1466,126 @@ html[data-theme="dark"] .delete-warning{
   .sport-motion-shuttle{left:78%;top:12%;opacity:.45}
   .sport-motion-shuttle.secondary{display:none}
 }
+
+
+/* Navigation scroll system v3 — phone, tablet, laptop, desktop and monitor */
+.sidebar{
+  height:100dvh;
+  max-height:100dvh;
+  overflow:hidden;
+  padding-bottom:max(14px,env(safe-area-inset-bottom));
+}
+.brand,.sidebar-mobile-head,.sidebar-footer{
+  flex:0 0 auto;
+}
+.nav-list{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior-y:contain;
+  scrollbar-gutter:stable;
+  scroll-padding-top:10px;
+  scroll-padding-bottom:18px;
+  padding-right:4px;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-y;
+}
+.nav-list::-webkit-scrollbar{width:7px}
+.nav-list::-webkit-scrollbar-track{background:transparent}
+.nav-list::-webkit-scrollbar-thumb{
+  background:rgba(205,229,252,.24);
+  border-radius:999px;
+}
+.nav-list::-webkit-scrollbar-thumb:hover{background:rgba(205,229,252,.42)}
+.nav-list{scrollbar-width:thin;scrollbar-color:rgba(205,229,252,.28) transparent}
+.sidebar-footer{
+  position:relative;
+  z-index:3;
+  margin-top:10px;
+  padding-top:12px;
+  border-top:1px solid rgba(255,255,255,.09);
+  background:linear-gradient(180deg,rgba(7,39,84,0),rgba(7,39,84,.96) 24%);
+}
+.nav-section-label{
+  position:sticky;
+  top:0;
+  z-index:2;
+  padding-top:8px;
+  padding-bottom:7px;
+  background:linear-gradient(180deg,rgba(7,42,88,.98) 75%,rgba(7,42,88,0));
+}
+.nav-section-label.workspace-label{
+  top:0;
+  margin-top:8px;
+}
+.nav-item{
+  min-width:0;
+}
+.nav-item strong{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.sidebar-tournament-select{
+  min-width:0;
+}
+.sidebar-tournament-select select{
+  width:100%;
+  max-width:100%;
+  text-overflow:ellipsis;
+}
+
+@media(max-height:760px) and (min-width:961px){
+  .sidebar{padding-top:16px;padding-bottom:10px}
+  .brand{padding-bottom:14px}
+  .brand-ball{width:36px;height:36px;font-size:14px}
+  .brand strong{font-size:14px}
+  .brand span{font-size:10px}
+  .nav-item{min-height:40px;padding:8px 10px}
+  .nav-section-label{font-size:9px}
+  .sidebar-footer{padding-top:8px;margin-top:7px}
+}
+
+@media(max-width:960px){
+  .sidebar{
+    height:100dvh!important;
+    max-height:100dvh!important;
+    padding-top:max(12px,env(safe-area-inset-top));
+    padding-bottom:max(12px,env(safe-area-inset-bottom));
+    overflow:hidden!important;
+  }
+  .sidebar .nav-list{
+    display:block!important;
+    flex:1 1 auto!important;
+    min-height:0!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior:contain!important;
+    padding:4px 5px 18px 0;
+  }
+  .sidebar .nav-item{
+    display:flex;
+    width:100%;
+    margin-bottom:5px;
+  }
+  .sidebar .nav-section-label{
+    margin-top:4px;
+  }
+  .sidebar-footer{
+    margin-top:0;
+    padding-bottom:2px;
+  }
+}
+
+@media(max-width:520px){
+  .sidebar{width:min(340px,90vw)}
+  .sidebar .nav-list{padding-bottom:12px}
+  .sidebar .nav-item{min-height:46px}
+}
+
+/* Larger displays keep the navigation readable without wasting vertical space. */
+@media(min-width:1700px) and (min-height:900px){
+  .nav-list{padding-right:7px}
+  .nav-item{min-height:46px}
+}
