@@ -1783,3 +1783,93 @@ html[data-theme="dark"] .delete-warning{
   .sidebar .nav-section-label.workspace-label{margin-top:7px!important;margin-bottom:5px!important}
   .sidebar-tournament-select select{min-height:42px!important}
 }
+
+
+/* Match card contrast fix v1 */
+.match-card{
+  color:var(--text);
+  box-shadow:0 8px 24px rgba(8,43,92,.06);
+}
+.match-card .team-slot{
+  color:var(--text);
+  font-weight:900;
+}
+.match-card .team-slot.tbd{
+  color:var(--muted);
+}
+.match-card .match-no{
+  color:var(--muted);
+}
+.match-card .match-meta{
+  color:var(--muted);
+}
+.match-card .match-meta strong{
+  color:var(--blue);
+}
+.match-card .match-actions .btn{
+  min-width:72px;
+}
+
+html[data-theme="dark"] .match-card{
+  background:#0f1f31;
+  border-color:#294159;
+  color:#edf6ff;
+  box-shadow:0 8px 22px rgba(0,0,0,.24);
+}
+html[data-theme="dark"] .match-card:hover{
+  border-color:#3a6a95;
+}
+html[data-theme="dark"] .match-card .team-slot{
+  color:#f3f8fd;
+}
+html[data-theme="dark"] .match-card .team-slot.tbd{
+  color:#8298ad;
+}
+html[data-theme="dark"] .match-card .match-no{
+  color:#9cb0c3;
+}
+html[data-theme="dark"] .match-card .match-meta{
+  color:#8fa6ba;
+  border-top-color:#294159;
+}
+html[data-theme="dark"] .match-card .match-meta strong{
+  color:#57b8ff;
+}
+html[data-theme="dark"] .match-card .score-badge{
+  background:#143653;
+  color:#f0f7ff;
+  border:1px solid #2d5676;
+}
+html[data-theme="dark"] .match-card .match-actions .btn-ghost{
+  background:#14283b;
+  border-color:#31506b;
+  color:#e8f3fc;
+}
+html[data-theme="dark"] .match-card .match-actions .btn-ghost:hover{
+  background:#1b3853;
+  border-color:#4b7aa0;
+}
+html[data-theme="dark"] .stage-header h3{
+  color:#edf6ff;
+}
+html[data-theme="dark"] .stage-header .chip{
+  background:#143653;
+  color:#d9ecff;
+}
+
+@media(max-width:700px){
+  .match-card{
+    padding:14px;
+    border-radius:16px;
+  }
+  .match-card .team-slot{
+    font-size:15px!important;
+  }
+  .match-card .match-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+  .match-card .match-actions .btn{
+    width:100%;
+  }
+}
