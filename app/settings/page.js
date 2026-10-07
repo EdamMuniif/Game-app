@@ -20,6 +20,10 @@ function parseBlocked(text) {
   return String(text).split('\n').map((line, index) => {
     const [date, start, end, area, ...reasonParts] = line.split(',').map((part) => part.trim());
     if (!date || !start || !end) throw new Error('Blocked period line ' + (index + 1) + ' must include date, start, and end.');
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !/^\d{2}:\d{2}$/.test(start) || !/^\d{2}:\d{2}$/.test(end)) {
+      throw new Error('Blocked period line ' + (index + 1) + ' has an invalid date or time.');
+    }
+    if (end <= start) throw new Error('Blocked period line ' + (index + 1) + ' must end after it starts.');
     return {
       date,
       start,
@@ -96,13 +100,23 @@ export default function SettingsPage() {
     const structural = (
       next.sport !== state.settings.sport ||
       next.format !== state.settings.format ||
-      Number(next.groupCount) !== Number(state.settings.groupCount) ||
-      Number(next.maxTeams) !== Number(state.settings.maxTeams) ||
-      next.futsalFormat !== state.settings.futsalFormat ||
-      next.badmintonEvent !== state.settings.badmintonEvent
+      (
+        ['groups', 'groups_knockout'].includes(next.format) &&
+        Number(next.groupCount) !== Number(state.settings.groupCount)
+      )
+    );
+    const qualificationChanged = (
+      next.format === 'groups_knockout' &&
+      Number(next.advancePerGroup) !== Number(state.settings.advancePerGroup)
     );
 
-    if (structural && (state.matches.length || state.teams.some((team) => team.letter || team.drawNumber)) && !window.confirm('These changes affect the competition structure. Clear the current draw and fixtures?')) return;
+    if (Number(next.maxRoster) < Number(next.playersPerTeam)) {
+      setMessage('Maximum roster cannot be smaller than players per team.');
+      return;
+    }
+
+    if (structural && (state.matches.length || state.teams.some((team) => team.letter || team.drawNumber)) && !window.confirm('Sport, format, or group changes require a new official draw and fixtures. Continue?')) return;
+    if (qualificationChanged && state.matches.some((match) => match.kind === 'knockout') && !window.confirm('Changing the number of qualifiers will remove the generated knockout stage. Group results will be kept. Continue?')) return;
 
     try {
       saveSettings(next);
@@ -167,7 +181,7 @@ export default function SettingsPage() {
             <div className="form-grid">
               <label>Maximum teams / entries<input name="maxTeams" type="number" min="2" max="64" required value={form.maxTeams} onChange={change} /></label>
               <label>Players per team / entry<input name="playersPerTeam" type="number" min="1" max="30" value={form.playersPerTeam || 1} onChange={change} /></label>
-              <label>Maximum roster<input name="maxRoster" type="number" min="1" max="40" value={form.maxRoster || 12} onChange={change} /></label>
+              <label>Maximum roster<input name="maxRoster" type="number" min={Math.max(1, Number(form.playersPerTeam) || 1)} max="40" value={form.maxRoster || 12} onChange={change} /></label>
               <label>Competition format
                 <select name="format" value={form.format} onChange={change}>
                   <option value="round_robin">Round Robin</option>
