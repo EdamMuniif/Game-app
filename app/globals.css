@@ -1946,3 +1946,282 @@ html[data-theme="dark"] .topbar-tournament-select select{
     max-width:none;
   }
 }
+
+
+/* Global layout alignment v5 */
+:root{
+  --page-max:1640px;
+  --page-gap:18px;
+  --panel-pad:20px;
+  --header-control-height:42px;
+}
+
+.main-content{
+  min-width:0;
+}
+.content-frame{
+  width:100%;
+  max-width:var(--page-max);
+  margin:0 auto;
+}
+.topbar{
+  min-height:96px;
+  padding:20px 0 16px;
+  align-items:flex-end;
+}
+.topbar-title{
+  min-width:0;
+  flex:1 1 auto;
+}
+.topbar-title h1{
+  line-height:1.08;
+}
+.topbar-actions{
+  flex:0 1 auto;
+  justify-content:flex-end;
+  margin-left:auto;
+}
+.topbar-tournament-select select,
+.theme-toggle{
+  height:var(--header-control-height);
+}
+.topbar-tournament-select select{
+  max-width:300px;
+}
+
+.panel,
+.stat-card,
+.standings-card,
+.control-match-card,
+.control-score-card,
+.public-card,
+.public-section{
+  border-radius:16px;
+}
+.panel{
+  padding:var(--panel-pad);
+}
+.page-grid,
+.grid-2,
+.standings-grid,
+.live-draw-grid,
+.control-stats,
+.stats-grid{
+  align-items:start;
+}
+.panel-head,
+.stage-header{
+  width:100%;
+  align-items:center;
+}
+.panel-head{
+  min-height:42px;
+  margin-bottom:16px;
+}
+.panel-head>div:first-child,
+.stage-header>h3,
+.draw-toolbar>div:first-child,
+.match-toolbar>div:first-child,
+.datasheet-toolbar>div:first-child,
+.report-actions>div:first-child,
+.control-selector>div:first-child{
+  min-width:0;
+}
+.panel-head h3,
+.stage-header h3,
+.draw-toolbar h3,
+.match-toolbar h3,
+.datasheet-toolbar h3,
+.report-actions h3,
+.control-selector h3{
+  line-height:1.2;
+}
+.panel-head .button-row,
+.stage-header .button-row{
+  justify-content:flex-end;
+}
+
+.draw-toolbar,
+.match-toolbar,
+.datasheet-toolbar,
+.report-actions,
+.control-selector{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  column-gap:24px;
+  row-gap:14px;
+}
+.draw-toolbar>.button-row,
+.match-toolbar>.button-row,
+.datasheet-toolbar>.button-row,
+.report-actions>.report-action-controls,
+.control-selector>select{
+  justify-self:end;
+}
+.draw-toolbar>.button-row,
+.match-toolbar>.button-row,
+.datasheet-toolbar>.button-row,
+.report-action-controls{
+  justify-content:flex-end;
+}
+
+.stage-block{
+  margin:0 0 22px;
+}
+.stage-header{
+  min-height:44px;
+  padding:0 2px;
+  margin-bottom:10px;
+}
+.match-card{
+  margin-bottom:10px;
+}
+.match-card:last-child{
+  margin-bottom:0;
+}
+
+.settings-panel{
+  max-width:none;
+}
+.settings-form{
+  width:100%;
+}
+.form-section{
+  padding:20px 0;
+}
+.form-section:first-child{
+  padding-top:0;
+}
+.form-section h4{
+  margin:0 0 14px;
+}
+.form-grid{
+  align-items:start;
+}
+
+.table-wrap{
+  width:100%;
+}
+.table-wrap table{
+  margin:0;
+}
+
+.notice,
+.schedule-warning,
+.public-mode-banner,
+.migration-banner{
+  margin-bottom:var(--page-gap);
+}
+
+@media(min-width:1700px){
+  .main-content{
+    padding-left:36px;
+    padding-right:36px;
+  }
+  :root{
+    --panel-pad:22px;
+  }
+}
+
+@media(max-width:1100px){
+  .draw-toolbar,
+  .match-toolbar,
+  .datasheet-toolbar,
+  .report-actions,
+  .control-selector{
+    grid-template-columns:1fr;
+    align-items:start;
+  }
+  .draw-toolbar>.button-row,
+  .match-toolbar>.button-row,
+  .datasheet-toolbar>.button-row,
+  .report-actions>.report-action-controls,
+  .control-selector>select{
+    justify-self:stretch;
+    width:100%;
+  }
+  .draw-toolbar>.button-row,
+  .match-toolbar>.button-row,
+  .datasheet-toolbar>.button-row,
+  .report-action-controls{
+    justify-content:flex-start;
+  }
+}
+
+@media(max-width:960px){
+  .main-content{
+    padding-left:16px;
+    padding-right:16px;
+  }
+  .topbar{
+    min-height:82px;
+    padding:14px 0 12px;
+    align-items:center;
+  }
+}
+
+@media(max-width:700px){
+  :root{
+    --panel-pad:15px;
+    --page-gap:14px;
+  }
+  .main-content{
+    padding-left:12px;
+    padding-right:12px;
+  }
+  .topbar{
+    display:grid!important;
+    grid-template-columns:1fr;
+    gap:10px;
+    min-height:auto;
+    padding:14px 0 12px;
+  }
+  .topbar-actions{
+    width:100%;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 44px;
+    gap:8px;
+    margin:0;
+  }
+  .topbar-tournament-select{
+    width:100%;
+  }
+  .topbar-tournament-select select{
+    width:100%;
+    max-width:none;
+    min-width:0;
+  }
+  .topbar-actions .theme-toggle{
+    width:44px;
+    min-width:44px;
+  }
+  .panel-head{
+    align-items:flex-start;
+    gap:10px;
+  }
+  .panel-head>.button-row{
+    width:100%;
+  }
+  .draw-toolbar>.button-row .btn,
+  .match-toolbar>.button-row .btn,
+  .datasheet-toolbar>.button-row .btn{
+    flex:1 1 calc(50% - 5px);
+  }
+  .stage-header{
+    align-items:center;
+  }
+}
+
+@media(max-width:420px){
+  .main-content{
+    padding-left:10px;
+    padding-right:10px;
+  }
+  .topbar-title h1{
+    font-size:21px;
+  }
+  .topbar-tournament-select select{
+    font-size:10px;
+  }
+}
