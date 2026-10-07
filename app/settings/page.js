@@ -202,7 +202,16 @@ export default function SettingsPage() {
             <div className="form-grid">
               {form.sport === 'Futsal' && (
                 <label>Futsal format
-                  <select name="futsalFormat" value={form.futsalFormat || '5v5'} onChange={change}>
+                  <select name="futsalFormat" value={form.futsalFormat || '5v5'} onChange={(event) => {
+                    const value = event.target.value;
+                    const playersPerTeam = Number(value.split('v')[0]) || 5;
+                    setForm((current) => ({
+                      ...current,
+                      futsalFormat: value,
+                      playersPerTeam,
+                      maxRoster: Math.max(Number(current.maxRoster) || 0, playersPerTeam)
+                    }));
+                  }}>
                     <option>3v3</option><option>4v4</option><option>5v5</option>
                   </select>
                 </label>
@@ -236,7 +245,16 @@ export default function SettingsPage() {
 
               {form.sport === 'Badminton' && <>
                 <label>Event
-                  <select name="badmintonEvent" value={form.badmintonEvent || 'Singles'} onChange={change}>
+                  <select name="badmintonEvent" value={form.badmintonEvent || 'Singles'} onChange={(event) => {
+                    const value = event.target.value;
+                    const playersPerTeam = value === 'Singles' ? 1 : 2;
+                    setForm((current) => ({
+                      ...current,
+                      badmintonEvent: value,
+                      playersPerTeam,
+                      maxRoster: Math.max(playersPerTeam, Math.min(Number(current.maxRoster) || playersPerTeam, 2))
+                    }));
+                  }}>
                     <option>Singles</option><option>Doubles</option><option>Mixed Doubles</option>
                   </select>
                 </label>
